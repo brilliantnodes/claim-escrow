@@ -233,8 +233,8 @@ const SCENES = {
     const step = (x, k, a, b) => `<g opacity="${k}"><text x="${x}" y="${y + 130}" fill="#fff" font-size="28" font-family="InterV" font-weight="600" text-anchor="middle">${a}</text><text x="${x}" y="${y + 166}" fill="${C.muted}" font-size="22" font-family="InterV" text-anchor="middle">${b}</text></g>`;
     g += step(x0 + w * .25, seg(t, 2.3, 2.7), "Transfer confirmed", "upfront: 50% of the price") + step(x0 + w * .75, seg(t, 4.4, 4.8), "Allowed at $1,250,000", "the price for that amount");
     const alts = `<div class="abs" style="left:${px(260)};top:${px(780)};width:${px(1400)};display:flex;gap:${px(30)}">
-      ${[["Disallowed", "the seller keeps the upfront; the rest back to the buyer", C.rose], ["Allowed at 80%", "the price for $800,000; the buyer gets the rest", C.amber], ["Withdrawn when the transfer showed", "everything back to the buyer", C.mauve]].map(([a, b, c], i) =>
-        `<div class="panel" style="position:relative;flex:1;border-top-color:${c};padding:${px(18)} ${px(22)};${rise(t, 5.6 + i * .3, 6.0 + i * .3)}"><div class="pt" style="font-size:${px(28)}">${a}</div><div class="ps" style="font-size:${px(20)}">${b}</div></div>`).join("")}</div>`;
+      ${[["Disallowed", "the seller keeps the upfront; the rest back to the buyer", C.rose], ["Allowed at 80%", "the price for $1,000,000; the buyer gets the rest", C.amber], ["Withdrawn before the buyer held it", "everything back to the buyer", C.mauve]].map(([a, b, c], i) =>
+        `<div class="panel" style="position:relative;flex:1;border-top-color:${c};padding:${px(18)} ${px(22)};${rise(t, 4.9 + i * .2, 5.3 + i * .2)}"><div class="pt" style="font-size:${px(28)}">${a}</div><div class="ps" style="font-size:${px(20)}">${b}</div></div>`).join("")}</div>`;
     const head = `<div class="abs h" style="left:${px(120)};top:${px(150)};width:${px(1500)};font-size:${px(58)};${rise(t, .1, .5)}">The whole price sits in escrow: 7.50 GEN.</div>`;
     return waves(t) + head + `<svg class="abs" style="left:0;top:0" width="${W}" height="${H}" viewBox="0 0 1920 1080">${g}</svg>` + alts;
   },
