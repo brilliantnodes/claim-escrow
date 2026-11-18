@@ -1,8 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ClaimEscrow on GenLayer</title></head>
-<body style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:760px;margin:40px auto;padding:0 18px;color:#1c2430">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimEscrow: bankruptcy-claim purchases settled from the public register, on GenLayer</title>
+<meta name="description" content="Escrow for the purchase of a bankruptcy claim. GenLayer validators read the claim's entry in the public claims register; code moves the money. Fictional demo, test GEN only.">
+<style>
+:root{--ink:#17202c;--mute:#5b6676;--line:#dde3eb;--bg:#f6f8fb;--card:#fff;--acc:#1f5fbf;--ok:#1b7f4b;--bad:#b3261e;--warn:#9a6700}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+header{background:#13233b;color:#fff;padding:42px 20px 34px}header .w{max-width:980px;margin:auto}h1{font-size:34px;margin:0 0 8px}header p{margin:6px 0;color:#d5deea;max-width:760px}
+header a{color:#9cc3ff}.pill{display:inline-block;background:#24395c;border-radius:20px;padding:3px 12px;font-size:13px;margin:10px 8px 0 0}
+main{max-width:980px;margin:auto;padding:24px 20px 60px}h2{font-size:22px;margin:34px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card h3{margin:0 0 4px;font-size:16px}.small{font-size:13px;color:var(--mute)}.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:1px 7px;background:#eef2f7;color:#334}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.steps li{margin:4px 0}.steps{padding-left:18px;margin:8px 0}.bar{height:10px;border-radius:5px;background:#e9edf3;overflow:hidden;display:flex;margin:8px 0 2px}
+.bar span{display:block;height:100%}.s{background:#2f7d55}.b{background:#3a6fc4}nav a{margin-right:14px}select{font-size:14px;padding:4px}
+footer{max-width:980px;margin:auto;padding:0 20px 40px;color:var(--mute);font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="w">
 <h1>ClaimEscrow</h1>
-<p>Escrow for the purchase of a bankruptcy claim, settled on GenLayer from the claim's entry in the public claims register. Being built; the live runs and the full site follow shortly.</p>
-<p><a href="https://github.com/brilliantnodes/claim-escrow">Repository</a> · by Brilliant Nodes · fictional demo, test GEN only</p>
-</body></html>
+<p><b>Escrow for the purchase of a bankruptcy claim, settled on GenLayer from the claim's entry in the public claims register.</b></p>
+<p>The whole price sits in escrow. Validators read who holds the claim, its status and its allowed amount on the register page; plain code decides every amount. Nothing moves on one look: a state counts once it is seen twice, a set time apart.</p>
+<span class="pill">Fictional case and names</span><span class="pill">Test GEN only</span><span class="pill">Not legal advice</span>
+<p style="margin-top:14px"><a href="https://github.com/brilliantnodes/claim-escrow">Repository</a> · <a href="https://github.com/brilliantnodes/claim-escrow/blob/main/contracts/claim_escrow.py">Contract</a> · by Brilliant Nodes</p>
+</div></header>
+<main>
+<h2>The trust problem</h2>
+<p>A creditor of a bankrupt company sells its claim for cash now. The price is a share of the claim, but the claim's worth is decided later, when it is allowed in full, cut or rejected. Today either the buyer pays in full and chases a refund if the claim is cut, or holds part back and the seller trusts it to pay later. The facts that decide the money are public, on the claims register, but on a page made for people.</p>
+
+<h2>How it works</h2>
+<div class="grid">
+<div class="card"><h3>1. Offer and baseline</h3><p class="small">The seller freezes the terms: buyer, both names as the register shows them, the claim's page (on a host frozen at deployment), price, upfront share, deadlines. A first reading must show the seller holding the claim.</p></div>
+<div class="card"><h3>2. Accept</h3><p class="small">The buyer pays exactly the price and the digest of the terms. The money is in escrow.</p></div>
+<div class="card"><h3>3. Transfer</h3><p class="small">When the register shows the buyer as holder twice, a set time apart, the upfront goes to the seller (if the status then is unclear, once the claim shows live with the buyer twice).</p></div>
+<div class="card"><h3>4. Decision</h3><p class="small">Allowed, disallowed or withdrawn, seen twice: code pays the price for the allowed amount, or refunds the buyer. A withdrawal pays the seller only if the register first showed the buyer holding the claim live. Anything unclear moves nothing.</p></div>
+<div class="card"><h3>5. Deadlines</h3><p class="small">No transfer in time refunds the buyer; no decision by the long stop splits what is left by an agreed share, unless the seller was seen holding the claim again twice. Readings count at their own time stamp; deadlines take effect 30 minutes late. No model needed.</p></div>
+<div class="card"><h3>6. Credits</h3><p class="small">Every payout is a credit each side withdraws itself. Once every withdrawal has finalized, the contract's balance equals what is locked plus what is credited; each run below was checked that way.</p></div>
+</div>
+
+<h2>Live runs</h2>
+<p>Run: <select id="run"></select> <span class="small" id="runinfo"></span></p>
+<div id="deals" class="grid"></div>
+<h3 style="margin-top:26px">Every transaction</h3>
+<div class="card" style="overflow-x:auto"><table id="steps"><thead><tr><th>Logged (UTC)</th><th>Case</th><th>Call</th><th>Outcome</th><th>Tx</th></tr></thead><tbody></tbody></table></div>
+
+<h2>Check it yourself</h2>
+<p class="small">Every rule is on chain: <span class="mono">get_rules()</span> returns the frozen register hosts, the closed label lists and the status phrase table. <span class="mono">get_deal(id)</span> returns a deal's terms, money, both counts and its log. Open the contract on the explorer from the run above.</p>
+</main>
+<footer>Every name, case and figure on this site and on the register pages is fictional. Test GEN only. Built by Brilliant Nodes on GenLayer.</footer>
+<script>
+var RUNS = [{file: "runs/live-studio-s8.json", label: "GenLayer Studio, run s8 (18 Nov 2026, this contract version)"},
+            {file: "runs/live-studio-s2.json", label: "GenLayer Studio, run s2 (earlier contract version)"},
+            {file: "runs/live-studio-s1.json", label: "GenLayer Studio, run s1 (earlier version; decision shown before the transfer was confirmed)"}];
+var EXPL = {studio: "https://explorer-studio.genlayer.com", bradbury: "https://scan.bradbury.genlayer.com"};
+function gen(w) { var x = BigInt(w || "0"); var s = (x / 10n ** 14n).toString().padStart(5, "0"); return s.slice(0, -4) + "." + s.slice(-4) + " GEN"; }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+function load(i) {
+  fetch(RUNS[i].file).then(function (r) { return r.json(); }).then(function (rec) {
+    var ex = EXPL[rec.net];
+    document.getElementById("runinfo").innerHTML = 'contract <a class="mono" href="' + ex + "/address/" + rec.contract.address + '">' + esc(rec.contract.address) + "</a>";
+    var box = document.getElementById("deals"); box.innerHTML = "";
+    var fin = (rec.final || {}).deals || {};
+    Object.keys(rec.deals).forEach(function (k) {
+      var d = rec.deals[k], f = fin[k], m = f ? f.money : null;
+      var html = '<div class="card"><h3>' + esc(d.title) + '</h3><div class="small">Claim ' + esc(f ? f.terms.claim_number : "") + ' · <a href="' + esc(d.url) + '">register page</a></div>';
+      if (f) {
+        var esc_ = BigInt(m.escrow || "0"), rel = BigInt(m.released), ref = BigInt(m.refunded);
+        var ps = esc_ > 0n ? Number(rel * 1000n / esc_) / 10 : 0, pb = esc_ > 0n ? Number(ref * 1000n / esc_) / 10 : 0;
+        html += '<div class="bar"><span class="s" style="width:' + ps + '%"></span><span class="b" style="width:' + pb + '%"></span></div>';
+        html += '<div class="small"><span class="ok">seller ' + gen(m.released) + "</span> · buyer " + gen(m.refunded) + " · of " + gen(m.escrow) + (m.shortfall !== "0" ? ' · <span class="warn">shortfall ' + gen(m.shortfall) + "</span>" : "") + "</div>";
+        var t = f.terms, now = Date.now() / 1000, due = (f.state === "OFFERED" && now >= t.accept_by) ||
+            (f.state === "ACTIVE" && now >= (f.transfer.confirmed_at ? t.allowance_by : t.transfer_by) + 1800);
+        html += '<div class="small" style="margin-top:6px"><span class="tag">' + esc(f.state) + "</span> " + esc(f.settled_reason) + (due ? ' <span class="warn">settle due: a deadline has passed; any settle() applies it</span>' : "") + "</div>";
+        html += '<ul class="steps small">' + f.log.filter(function (x) { return x.what !== "CREDIT"; }).map(function (x) { return "<li><b>" + esc(x.what) + "</b> " + esc(x.note) + "</li>"; }).join("") + "</ul>";
+      } else { html += '<div class="small">running...</div>'; }
+      box.innerHTML += html + "</div>";
+    });
+    var tb = document.querySelector("#steps tbody"); tb.innerHTML = "";
+    rec.steps.forEach(function (s) {
+      var res = s.result, out = s.status + " / " + (s.execution || "");
+      if (res && typeof res === "object" && res.reading) out += " · " + (res.reading.kind === "READ" ? res.reading.holder + " " + res.reading.status + (res.reading.amount ? " " + res.reading.amount : "") : res.reading.reason);
+      else if (res && typeof res === "object" && res.error) out += " · " + res.error;
+      else if (typeof res === "string" && res) out += " · " + res;
+      tb.innerHTML += "<tr><td class=mono>" + esc(s.at.slice(11)) + "</td><td>" + esc(s.case) + "</td><td class=mono>" + esc(s.fn) + "</td><td class=small>" + esc(out) + (s.expect ? '<br><span class="small">expected: ' + esc(s.expect) + "</span>" : "") + '</td><td class=mono>' + (s.tx ? '<a href="' + ex + "/tx/" + s.tx + '">' + s.tx.slice(0, 10) + "</a>" : "") + "</td></tr>";
+    });
+  }).catch(function () { document.getElementById("deals").innerHTML = '<div class="small">This run\'s record is not published yet.</div>'; });
+}
+var sel = document.getElementById("run");
+RUNS.forEach(function (r, i) { var o = document.createElement("option"); o.value = i; o.textContent = r.label; sel.appendChild(o); });
+sel.onchange = function () { load(+sel.value); };
+load(0);
+</script>
+</body>
+</html>
