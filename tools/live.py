@@ -7,14 +7,15 @@ Bradbury Phase 2, side by side, and record every transaction.
 E is every offer's accept_by. The register pages must already be live at
 https://claims.brilliantnodes.com/register/<tag>/claim-<number>.html
 (tools/make_register.py <tag> <E> docs). They change at E + 3 min (the buyer
-appears as holder) and E + 16 min (the decision), and the script reads well
+appears as holder) and E + 20 min (the decision), and the script reads well
 away from those moments:
 
   E - 30 .. E     offer, baseline reading, accept (and one refused accept)
   E + 1 .. 2      the one-sided case: the buyer releases, the seller refunds
   E + 5           first reading after the transfer (transfer seen)
-  E + 18          second reading (transfer confirmed; decision seen)
-  E + 29          third reading (decision confirmed: settled)
+  E + 16          second reading (transfer confirmed: the upfront is released)
+  E + 23          third reading (the decision, shown from E + 20, seen)
+  E + 34          fourth reading (decision confirmed: settled)
   E + 60          settle: no transfer by transfer_by (E + 30) + 30 min
   E + 85          settle: no decision by allowance_by (E + 55) + 30 min
   then            withdrawals; totals reconciled with the contract's balance
@@ -244,14 +245,16 @@ def run_case(i, case, addr, did):
         until(E + 5 * 60 + i * 8)
         t1 = time.time()
         step(key, reader, addr, "read_register", [did], expect="transfer seen")
-        until(max(E + 18 * 60 + i * 8, t1 + C + 30))
+        until(max(E + 16 * 60 + i * 8, t1 + C + 30))
         t2 = time.time()
-        step(key, reader, addr, "read_register", [did], expect="transfer confirmed; decision seen" if case.get("decision") else "transfer confirmed")
+        step(key, reader, addr, "read_register", [did], expect="transfer confirmed: upfront released")
+        until(max(E + 23 * 60 + i * 8, t2 + 60))
+        t3 = time.time()
+        step(key, reader, addr, "read_register", [did], expect="decision seen")
+        until(max(E + 34 * 60 + i * 8, t3 + C + 30))
         if key != "unclear":
-            until(max(E + 29 * 60 + i * 8, t2 + C + 30))
             step(key, reader, addr, "read_register", [did], expect=case["expect"])
         else:
-            until(max(E + 29 * 60 + i * 8, t2 + C + 30))
             step(key, reader, addr, "read_register", [did], expect="status unclear: no decision")
             until(ALLOWANCE_BY + 1800 + 30)
             step(key, reader, addr, "settle", [did], expect=case["expect"])

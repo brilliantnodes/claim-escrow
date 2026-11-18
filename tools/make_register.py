@@ -11,7 +11,8 @@ at different moments see the register change the way a real one does:
 
   until E + 3 min    the seller holds the claim, status Pending
   from  E + 3 min    the buyer is shown as holder ("... as transferee of ...")
-  from  E + 16 min   the court's decision (allowed, disallowed, withdrawn...)
+  from  E + 20 min   the court's decision (allowed, disallowed, withdrawn...),
+                     after the reading that confirms the transfer
 
 The live script reads well away from those change times. Pages go to
 <out_dir>/register/<tag>/claim-<number>.html, served from
@@ -25,7 +26,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = json.loads((ROOT / "examples" / "cases.json").read_text())
-FLIP, DECIDE = 3 * 60, 16 * 60
+FLIP, DECIDE = 3 * 60, 20 * 60  # run s1 used 16 min (the decision then showed at the transfer-confirming reading)
 
 STYLE = """body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:780px;margin:32px auto;padding:0 18px;color:#1c2430;background:#f7f8fa}
 .bar{background:#22334d;color:#fff;padding:14px 18px;border-radius:6px}.bar b{font-size:19px}.bar span{display:block;font-size:13px;opacity:.8}
