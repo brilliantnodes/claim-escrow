@@ -1,0 +1,7 @@
+node_modules/
+build/
+pv_*.jpg
+*.mp4
+shot_site.jpg
+data.json
+data_preview.json
