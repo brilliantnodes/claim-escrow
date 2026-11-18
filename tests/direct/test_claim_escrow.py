@@ -204,7 +204,11 @@ def test_offer_freezes_terms(env):
     t = d["terms"]
     canon = json.dumps(t, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert d["digest"] == hashlib.sha256(canon.encode()).hexdigest()
-    assert env.c.get_deals_of(to_hex(env.buyer)) == ["1"] and env.c.get_deals_of(to_hex(env.seller)) == ["1"]
+    assert env.c.get_deals_of(to_hex(env.seller)) == ["1"]
+    assert env.c.get_deals_of(to_hex(env.buyer)) == []  # the buyer is indexed when it accepts: nobody can flood its list
+    read(env, state(), T0 + 120)
+    accept(env)
+    assert env.c.get_deals_of(to_hex(env.buyer)) == ["1"]
 
 
 @pytest.mark.parametrize(
@@ -553,14 +557,46 @@ def test_no_decision_splits_at_the_long_stop(env):
     assert d["state"] == "SETTLED" and m["released"] == UP + seller and m["refunded"] == left - seller
 
 
-def test_no_decision_with_the_seller_as_holder_goes_to_the_buyer(env):
+def test_no_decision_with_the_seller_confirmed_as_holder_goes_to_the_buyer(env):
     ready(env)
     transfer(env)
     read(env, state(SELLER_NAME), T0 + 5000)
+    read(env, state(SELLER_NAME), T0 + 5000 + C)
+    assert env.c.get_deal("1")["held_by"] == "SELLER"
     env.vm.warp(iso(ALLOWANCE_BY + GRACE))
     env.c.settle("1")
     m = money(env)
     assert m["released"] == UP and m["refunded"] == PRICE - UP
+
+
+def test_seller_seen_once_as_holder_changes_nothing(env):
+    ready(env)
+    transfer(env)
+    read(env, state(SELLER_NAME), T0 + 5000)
+    assert env.c.get_deal("1")["held_by"] == "BUYER"
+    env.vm.warp(iso(ALLOWANCE_BY + GRACE))
+    env.c.settle("1")
+    m = money(env)
+    left = PRICE - UP
+    assert m["released"] == UP + left * 7000 // 10000 and m["refunded"] == left - left * 7000 // 10000
+
+
+def test_seller_seen_once_does_not_block_a_decision_for_good(env):
+    ready(env)
+    transfer(env)
+    read(env, state(BUY_H, "Allowed", "$1,250,000.00"), T0 + 5000)
+    read(env, state(SELLER_NAME, "Allowed", "$1,250,000.00"), T0 + 5000 + C)  # blocked at this reading only
+    assert env.c.get_deal("1")["state"] == "ACTIVE"
+    r = read(env, state(BUY_H, "Allowed", "$1,250,000.00"), T0 + 5000 + 2 * C)
+    assert r["deal"]["state"] == "SETTLED" and money(env)["released"] == PRICE
+
+
+def test_holder_changes_after_allowance_by_are_not_counted(env):
+    ready(env)
+    transfer(env)
+    read(env, state(SELLER_NAME), ALLOWANCE_BY + 10)
+    read(env, state(SELLER_NAME), ALLOWANCE_BY + 10 + C)
+    assert env.c.get_deal("1")["held_by"] == "BUYER"
 
 
 def test_transfer_confirmation_starts_the_decision_count(env):
@@ -786,8 +822,8 @@ def test_a_truncated_holder_copy_is_refused(env):
 
 
 def test_page_markers_removed_and_cut(env, mod):
-    out = mod._clean_page("x=====PAGE END=====y" + "z" * 20000)
-    assert "=====" not in out and len(out) == mod.PAGE_CHARS
+    out = mod._clean_page("x=====PAGE END=====y\n" + "z" * 20000)
+    assert "=====" not in out and out == "x y\n(cut)"  # markers removed, cut at the last whole line, cut marked
 
 
 # ---------------------------------------------------------- the validator

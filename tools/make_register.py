@@ -11,8 +11,9 @@ at different moments see the register change the way a real one does:
 
   until E + 3 min    the seller holds the claim, status Pending
   from  E + 3 min    the buyer is shown as holder ("... as transferee of ...")
-  from  E + 20 min   the court's decision (allowed, disallowed, withdrawn...),
+  from  E + 40 min   the court's decision (allowed, disallowed, withdrawn...),
                      after the reading that confirms the transfer
+  (case withdrawn_early: the withdrawal shows from E + 3 min, with the transfer)
 
 The live script reads well away from those change times. Pages go to
 <out_dir>/register/<tag>/claim-<number>.html, served from
@@ -26,7 +27,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = json.loads((ROOT / "examples" / "cases.json").read_text())
-FLIP, DECIDE = 3 * 60, 20 * 60  # run s1 used 16 min (the decision then showed at the transfer-confirming reading)
+FLIP, DECIDE = 3 * 60, 40 * 60  # s1 used 16 min, s2 20 min, s3-s7 22 min; in s7 a busy Studio processed the E + 16 readings after E + 22
 
 STYLE = """body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:780px;margin:32px auto;padding:0 18px;color:#1c2430;background:#f7f8fa}
 .bar{background:#22334d;color:#fff;padding:14px 18px;border-radius:6px}.bar b{font-size:19px}.bar span{display:block;font-size:13px;opacity:.8}
@@ -81,8 +82,12 @@ def schedule(case, e):
     trans = f"{buyer} as transferee of {seller}"
     s = [{"from": e - 6 * 3600, "holder": seller, "status": "Pending", "allowed": ""}]
     after_flip = trans if case.get("transfer", True) else seller
-    s.append({"from": e + FLIP, "holder": after_flip, "status": "Pending", "allowed": ""})
     d = case.get("decision")
+    if d and case.get("decision_from_flip"):
+        # the decision is already on the register when the transfer first shows (a withdrawal filed before the transfer)
+        s.append({"from": e + FLIP, "holder": after_flip, "status": d["status"], "allowed": d.get("allowed", "")})
+        return s
+    s.append({"from": e + FLIP, "holder": after_flip, "status": "Pending", "allowed": ""})
     if d:
         s.append({"from": e + DECIDE, "holder": after_flip, "status": d["status"], "allowed": d.get("allowed", "")})
     return s

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the eight fictional ClaimEscrow cases live on GenLayer Studio or Testnet
+"""Run the nine fictional ClaimEscrow cases live on GenLayer Studio or Testnet
 Bradbury Phase 2, side by side, and record every transaction.
 
     python tools/live.py <tag> <E_unix> [--net studio|bradbury] [--contract 0x..]
@@ -7,17 +7,18 @@ Bradbury Phase 2, side by side, and record every transaction.
 E is every offer's accept_by. The register pages must already be live at
 https://claims.brilliantnodes.com/register/<tag>/claim-<number>.html
 (tools/make_register.py <tag> <E> docs). They change at E + 3 min (the buyer
-appears as holder) and E + 20 min (the decision), and the script reads well
-away from those moments:
+appears as holder) and E + 40 min (the decision). Validators render a page
+when the transaction is processed, which on a busy Studio has been 35
+minutes after it was sent, so the script reads well away from those moments:
 
   E - 30 .. E     offer, baseline reading, accept (and one refused accept)
   E + 1 .. 2      the one-sided case: the buyer releases, the seller refunds
   E + 5           first reading after the transfer (transfer seen)
   E + 16          second reading (transfer confirmed: the upfront is released)
-  E + 23          third reading (the decision, shown from E + 20, seen)
-  E + 34          fourth reading (decision confirmed: settled)
+  E + 42          third reading (the decision, shown from E + 40, seen)
+  E + 53          fourth reading (decision confirmed: settled)
   E + 60          settle: no transfer by transfer_by (E + 30) + 30 min
-  E + 85          settle: no decision by allowance_by (E + 55) + 30 min
+  E + 95          settle: no decision by allowance_by (E + 65) + 30 min
   then            withdrawals; totals reconciled with the contract's balance
 
 Studio: throwaway accounts funded from Studio's faucet. Bradbury: two test
@@ -34,6 +35,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class ReceiptTimeout(RuntimeError):
+    """The transaction was sent but no receipt came back: never send it again."""
 G = 10**18
 SITE = os.environ.get("CE_SITE", "https://claims.brilliantnodes.com")
 HOST = SITE.split("://", 1)[1].split("/", 1)[0]
@@ -50,7 +55,7 @@ def opt(name, default=""):
 NET = opt("--net", "studio")
 BB = NET == "bradbury"
 UPG = CASES["units_per_gen"][NET]
-TRANSFER_BY, ALLOWANCE_BY = E + 30 * 60, E + 55 * 60
+TRANSFER_BY, ALLOWANCE_BY = E + 30 * 60, E + 65 * 60
 REC_PATH = ROOT / "examples" / f"live-{NET}-{TAG}.json"
 REC = {"net": NET, "tag": TAG, "accept_by": E, "transfer_by": TRANSFER_BY, "allowance_by": ALLOWANCE_BY, "site": SITE,
        "contract": {}, "accounts": {}, "deals": {}, "steps": []}
@@ -85,24 +90,42 @@ if not BB:
 
     ACCTS, ROLE_LOCKS = {}, {}
 
+    def _keep_key(role, a):
+        """Keep this throwaway Studio key outside the repo (never printed or
+        committed), so a run cut short by a restart can still be finished by
+        hand: withdrawals need the parties' own keys."""
+        d = Path(os.environ.get("LIVE_KEY_DIR", "/home/claude/keys"))
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / f"studio-{Path(REC_PATH).stem}.json"
+        keys = json.loads(f.read_text()) if f.exists() else {}
+        keys[role] = a.key.hex() if hasattr(a.key, "hex") else str(a.key)
+        f.write_text(json.dumps(keys))
+        os.chmod(f, 0o600)
+
     def make_accounts():
-        for role in ("seller", "buyer") + tuple(f"reader{i}" for i in range(8)):
+        for role in ("seller", "buyer") + tuple(f"reader{i}" for i in range(len(CASES["cases"]))):
             a = create_account()
             c = create_client(chain=studionet, account=a)
-            c.provider.make_request(method="sim_fundAccount", params=[a.address, 200 * G])
+            for k in range(8):  # Studio's gateway sometimes answers 502 for a few seconds
+                try:
+                    c.provider.make_request(method="sim_fundAccount", params=[a.address, 200 * G])
+                    break
+                except Exception:
+                    time.sleep(10)
             ACCTS[role] = (c, a)
+            _keep_key(role, a)
             ROLE_LOCKS[role] = threading.Lock()
             REC["accounts"][role] = a.address
 
     def _wait(c, tx):
-        deadline, last = time.time() + 1200, None
+        deadline, last = time.time() + 3600, None  # a busy Studio has taken 35 minutes to process a reading
         while time.time() < deadline:
             try:
                 return c.wait_for_transaction_receipt(transaction_hash=tx, status=TransactionStatus.ACCEPTED, interval=3000, retries=20)
             except Exception as e:  # Studio's gateway sometimes answers 502/520 for a few seconds
                 last = e
                 time.sleep(5)
-        raise RuntimeError(f"no receipt for {tx}: {last}")
+        raise ReceiptTimeout(f"no receipt for {tx}: {last}")
 
     def _result(r):
         cd = r.get("consensus_data") or {}
@@ -133,7 +156,13 @@ if not BB:
 
     def view(addr, fn, fargs):
         c, a = ACCTS["reader0"]
-        return c.read_contract(address=addr, function_name=fn, args=fargs)
+        for k in range(8):  # a view has no side effect, so a retry after a gateway error is safe
+            try:
+                return c.read_contract(address=addr, function_name=fn, args=fargs)
+            except Exception:
+                if k == 7:
+                    raise
+                time.sleep(10)
 
     def balance(addr):
         c, a = ACCTS["reader0"]
@@ -214,10 +243,19 @@ else:
 
 def step(case, role, addr, fn, fargs, value=0, expect=None, payees=""):
     log(f"[{case}] {fn} from {role}" + (f" value {value}" if value else ""))
-    try:
-        tx, r = send(role, addr, fn, fargs, value, payees)
-    except Exception as e:
-        tx, r = None, {"status": "SEND_FAILED", "error": str(e)[:300]}
+    for attempt in range(3 if fn == "read_register" else 1):
+        # a reading is an observation: sending it again after a failed send cannot move money twice
+        try:
+            tx, r = send(role, addr, fn, fargs, value, payees)
+            break
+        except ReceiptTimeout as e:
+            tx, r = None, {"status": "NO_RECEIPT", "error": str(e)[:300]}
+            log(f"[{case}]   sent, but no receipt: {str(e)[:120]} (not sent again)")
+            break
+        except Exception as e:
+            tx, r = None, {"status": "SEND_FAILED", "error": str(e)[:300]}
+            log(f"[{case}]   send failed ({str(e)[:80]}); " + ("retrying in 15 s" if fn == "read_register" and attempt < 2 else "not retried"))
+            time.sleep(15 if fn == "read_register" else 0)
     entry = {"case": case, "at": utc(), "from": REC["accounts"][role], "fn": fn, "args": fargs, "value": str(value), "tx": tx,
              **{k: v for k, v in r.items() if k != "votes"}}
     if r.get("votes"):
@@ -248,10 +286,10 @@ def run_case(i, case, addr, did):
         until(max(E + 16 * 60 + i * 8, t1 + C + 30))
         t2 = time.time()
         step(key, reader, addr, "read_register", [did], expect="transfer confirmed: upfront released")
-        until(max(E + 23 * 60 + i * 8, t2 + 60))
+        until(max(E + 42 * 60 + i * 8, t2 + 60))
         t3 = time.time()
         step(key, reader, addr, "read_register", [did], expect="decision seen")
-        until(max(E + 34 * 60 + i * 8, t3 + C + 30))
+        until(max(E + 53 * 60 + i * 8, t3 + C + 30))
         if key != "unclear":
             step(key, reader, addr, "read_register", [did], expect=case["expect"])
         else:

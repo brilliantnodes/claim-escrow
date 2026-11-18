@@ -17,6 +17,7 @@ MAX_CONFIRM_SECONDS = 30 * 86400
 MIN_CONFIRM_FLOOR = 60
 MAX_HORIZON_SECONDS = 5 * 366 * 86400
 GRACE_SECONDS = 1800
+BASELINE_MAX_PERIODS = 3
 PAGE_CHARS = 12000
 ANCHOR_CHARS = 80
 RENDER_WAIT = '2s'
@@ -38,7 +39,8 @@ DIGITS = '0123456789'
 CURRENCY_SYMBOLS = {'EUR': '€', 'USD': '$', 'GBP': '£', 'JPY': '¥'}
 ISO_CODES = ('USD', 'EUR', 'GBP', 'CHF', 'JPY', 'CAD', 'AUD', 'SEK', 'NOK', 'DKK', 'SGD', 'HKD')
 SYMBOLS = ('$', '£', '¥', '€', '₹', '₩', '₽', '₺', '₦', '₪', '₫', '฿', '₣', '₱')
-SCALE_WORDS = ('thousand', 'thousands', 'k', 'million', 'millions', 'mn', 'm', 'mm', 'billion', 'billions', 'bn')
+REF_WORDS = ('no', 'nos', 'docket', 'dkt', 'ecf', 'doc', 'docs', 'note', 'notes')
+LEAD_MARKS = '•*·>#'
 
 def _host_of(url: str) -> str:
  rest = url.split('://', 1)[1]
@@ -66,8 +68,8 @@ def _url_problem(url: str, hosts: list) -> str:
   return f'register_url must be 1 to {MAX_URL_LEN} characters'
  if not url.startswith('https://'):
   return 'register_url must start with https://'
- if any((c.isspace() or ord(c) < 32 for c in url)) or '\\' in url or '#' in url:
-  return 'register_url must not contain spaces, backslashes or #'
+ if any((c.isspace() or ord(c) < 32 for c in url)) or '\\' in url or '#' in url or ('?' in url):
+  return 'register_url must not contain spaces, backslashes, ? or #'
  authority = url.split('://', 1)[1]
  for sep in ('/', '?'):
   authority = authority.split(sep, 1)[0]
@@ -96,7 +98,9 @@ def _fmt(ts: int) -> str:
  return datetime.fromtimestamp(ts, timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
 def _norm(v) -> str:
- s = str(v or '').replace('\xa0', ' ').replace('\u202f', ' ').replace('−', '-').replace('–', '-')
+ s = str(v or '').replace('\xa0', ' ').replace('\u202f', ' ')
+ for d in ('−', '–', '—', '‒', '―'):
+  s = s.replace(d, '-')
  return ' '.join(s.split()).lower()
 
 def _norm_label(v) -> str:
@@ -130,7 +134,12 @@ def _clean_page(text) -> str:
   text = bytes(text).decode('utf-8', errors='replace')
  text = str(text or '')
  text = text.replace(PAGE_BEGIN, ' ').replace(PAGE_END, ' ').replace('=====', ' ')
- return text[:PAGE_CHARS]
+ if len(text) > PAGE_CHARS:
+  text = text[:PAGE_CHARS]
+  nl = text.rfind('\n')
+  text = text[:nl] if nl >= 0 else ''
+  text += '\n(cut)'
+ return text
 
 def _parse_llm_json(raw) -> dict:
  if isinstance(raw, dict):
@@ -144,9 +153,39 @@ def _parse_llm_json(raw) -> dict:
   raise ValueError('answer is not a JSON object')
  return out
 
+def _drop_refs(s: str) -> str:
+ out, i, n = ([], 0, len(s))
+ while i < n:
+  if s[i].isalpha() and (i == 0 or not s[i - 1].isalnum()):
+   j = i
+   while j < n and s[j].isalpha():
+    j += 1
+   if s[i:j] in REF_WORDS:
+    k = j
+    if k < n and s[k] == '.':
+     k += 1
+    while k < n and s[k] in ' #':
+     k += 1
+    if k < n and s[k] in DIGITS and (k > j):
+     while k < n and (s[k] in DIGITS or s[k] in ', &-' or s.startswith('and ', k)):
+      k += 4 if s.startswith('and ', k) else 1
+     out.append(s[i:j] + ' ')
+     i = k
+     continue
+   out.append(s[i:j])
+   i = j
+   continue
+  out.append(s[i])
+  i += 1
+ return ''.join(out)
+
+def _dotted_address(r: str) -> bool:
+ parts = r.split('.')
+ return len(parts) == 4 and all((1 <= len(x) <= 3 and all((c in DIGITS for c in x)) and (int(x) <= 255) for x in parts))
+
 def _decimal_comma_page(page: str) -> bool:
  runs, cur = ([], '')
- for ch in page + ' ':
+ for ch in _drop_refs(str(page or '').lower()) + ' ':
   if ch in DIGITS or (ch in '.,' and cur != ''):
    cur += ch
   else:
@@ -154,6 +193,8 @@ def _decimal_comma_page(page: str) -> bool:
     runs.append(cur.rstrip('.,'))
    cur = ''
  for r in runs:
+  if _dotted_address(r):
+   continue
   if ',' in r:
    tail = r.rsplit(',', 1)[1]
    if 1 <= len(tail) <= 2 and all((c in DIGITS for c in tail)):
@@ -212,21 +253,57 @@ SEPARATORS = ' \n:|-=—'
 def _page_lines(page) -> str:
  return '\n'.join((_norm(line) for line in str(page or '').splitlines()))
 
-def _line_anchored(pl: str, label_n: str, value_n: str) -> bool:
+def _line_anchored(pl: str, label_n: str, value_n: str, want_start: bool=False):
  if label_n == '' or value_n == '' or '\n' in value_n:
-  return False
+  return None if not want_start else -1
  i = pl.find(label_n)
  while i >= 0:
   a, b = (i, i + len(label_n))
-  if (a == 0 or not pl[a - 1].isalnum()) and (b == len(pl) or pl[b] in SEPARATORS):
-   j = b
-   while j < len(pl) and j - b <= ANCHOR_CHARS and (pl[j] in SEPARATORS):
+  start = pl.rfind('\n', 0, a) + 1
+  if all((c in SEPARATORS or c in LEAD_MARKS for c in pl[start:a])) and (b == len(pl) or pl[b] in SEPARATORS):
+   j, breaks = (b, 0)
+   while j < len(pl) and j - b <= ANCHOR_CHARS and (pl[j] in SEPARATORS) and (breaks + (pl[j] == '\n') <= 1):
+    breaks += pl[j] == '\n'
     j += 1
    if j - b <= ANCHOR_CHARS and pl.startswith(value_n, j):
     e = j + len(value_n)
-    if e == len(pl) or pl[e] == '\n':
-     return True
+    eol = pl.find('\n', e)
+    eol = len(pl) if eol < 0 else eol
+    if all((c in ' |' for c in pl[e:eol])):
+     return pl[start:eol] if not want_start else start
   i = pl.find(label_n, i + 1)
+ return None if not want_start else -1
+QUALIFIERS = ('partial', 'partially', 'voting purposes', 'subject to', 'reduced', 'reserved', 'disputed', 'contingent', 'unliquidated', 'pending objection')
+
+def _label_form_lines(pl: str, labels) -> list:
+ out, pos = ([], 0)
+ for line in pl.split('\n'):
+  k = 0
+  while k < len(line) and (line[k] in SEPARATORS or line[k] in LEAD_MARKS):
+   k += 1
+  rest = line[k:]
+  for lab in labels:
+   if rest.startswith(lab):
+    tail = rest[len(lab):].lstrip(' ')
+    if tail == '' or tail[0] in ':|=':
+     out.append(pos)
+     break
+  pos += len(line) + 1
+ return out
+
+def _line_start(pl: str, label_n: str, value_n: str) -> int:
+ return _line_anchored(pl, label_n, value_n, True)
+
+def _qualified_next(pl: str, start: int, label_n: str, value_n: str) -> bool:
+ used = (_line_anchored(pl, label_n, value_n) or '').count('\n') + 1
+ lines = pl[start:].split('\n')
+ for nxt in lines[used:]:
+  n = nxt.strip(' |\t\xa0')
+  if n == '':
+   continue
+  if n.startswith('(') or any((w in n for w in QUALIFIERS)) or n.startswith(tuple((m.strip() for m in TRANSFEREE_MARKS))):
+   return True
+  break
  return False
 
 def _claim_number_on_page(page_n: str, number: str) -> bool:
@@ -234,23 +311,27 @@ def _claim_number_on_page(page_n: str, number: str) -> bool:
  i = page_n.find(n)
  while i >= 0:
   a, b = (i, i + len(n))
-  before = a == 0 or not (page_n[a - 1].isalnum() or page_n[a - 1] == '-')
-  after = b >= len(page_n) or not (page_n[b].isalnum() or (page_n[b] == '-' and b + 1 < len(page_n) and page_n[b + 1].isalnum()))
+  before = a == 0 or not (page_n[a - 1].isalnum() or page_n[a - 1] == '-' or (page_n[a - 1] in './' and a > 1 and page_n[a - 2].isalnum()))
+  after = b >= len(page_n) or not (page_n[b].isalnum() or (page_n[b] in '-./' and b + 1 < len(page_n) and page_n[b + 1].isalnum()))
   if before and after:
    return True
   i = page_n.find(n, i + 1)
  return False
 
 def _holder_class(value, t: dict) -> str:
- s = ' ' + _norm(value) + ' '
+ s = ' ' + ' '.join(_norm(value).replace('(', ' ').replace(')', ' ').split()) + ' '
+ buyer, seller = (_name_words(t['buyer_name']), _name_words(t['seller_name']))
+ source = None
  for mark in TRANSFEREE_MARKS:
   k = s.find(mark)
   if k >= 0:
+   source = _name_words(s[k + len(mark):])
    s = s[:k]
+   break
  words = _name_words(s)
- if words == _name_words(t['buyer_name']):
+ if words == buyer and source in (None, seller):
   return 'BUYER'
- if words == _name_words(t['seller_name']):
+ if words == seller and source in (None, buyer):
   return 'SELLER'
  return 'OTHER'
 
@@ -273,17 +354,26 @@ def _interpret(t: dict, ans: dict, page: str) -> dict:
  h, st, am = (fields['holder'], fields['status'], fields['allowed_amount'])
  if _norm_label(h.get('label')) not in HOLDER_LABELS or _norm_label(st.get('label')) not in STATUS_LABELS:
   return {'kind': 'NO_READING', 'reason': 'N2_LABEL'}
- if not _line_anchored(pl, _norm_label(h.get('label')), _norm(h.get('value'))):
+ h_at = _line_start(pl, _norm_label(h.get('label')), _norm(h.get('value')))
+ st_at = _line_start(pl, _norm_label(st.get('label')), _norm(st.get('value')))
+ if h_at < 0 or st_at < 0:
   return {'kind': 'NO_READING', 'reason': 'N2_NOT_ANCHORED'}
- if not _line_anchored(pl, _norm_label(st.get('label')), _norm(st.get('value'))):
-  return {'kind': 'NO_READING', 'reason': 'N2_NOT_ANCHORED'}
+ if any((x != h_at for x in _label_form_lines(pl, HOLDER_LABELS))) or any((x != st_at for x in _label_form_lines(pl, STATUS_LABELS))):
+  return {'kind': 'NO_READING', 'reason': 'N2_AMBIGUOUS'}
+ if any((w in pl for w in ('partial transfer', 'partial assignment', 'transfer of part'))):
+  return {'kind': 'NO_READING', 'reason': 'N2_AMBIGUOUS'}
+ if _qualified_next(pl, h_at, _norm_label(h.get('label')), _norm(h.get('value'))) or _qualified_next(pl, st_at, _norm_label(st.get('label')), _norm(st.get('value'))):
+  return {'kind': 'NO_READING', 'reason': 'N2_AMBIGUOUS'}
  status = STATUS_TABLE.get(_norm_status(st.get('value')), 'UNCLEAR')
  amount = 0
  if status == 'ALLOWED':
   if _norm_label(am.get('label')) not in AMOUNT_LABELS:
    return {'kind': 'NO_READING', 'reason': 'N2_LABEL'}
-  if not _line_anchored(pl, _norm_label(am.get('label')), _norm(am.get('value'))):
+  am_at = _line_start(pl, _norm_label(am.get('label')), _norm(am.get('value')))
+  if am_at < 0:
    return {'kind': 'NO_READING', 'reason': 'N2_NOT_ANCHORED'}
+  if any((x != am_at for x in _label_form_lines(pl, AMOUNT_LABELS))) or _qualified_next(pl, am_at, _norm_label(am.get('label')), _norm(am.get('value'))):
+   return {'kind': 'NO_READING', 'reason': 'N2_AMBIGUOUS'}
   if not _currency_ok(ans.get('currency_on_page'), t['currency']):
    return {'kind': 'NO_READING', 'reason': 'N2_CURRENCY'}
   units = _whole_units(am.get('value'), t['currency'])
@@ -400,7 +490,7 @@ def _digest(t: dict) -> str:
  return hashlib.sha256(_canonical(t).encode('utf-8')).hexdigest()
 
 def _new_state(now: int) -> dict:
- return {'state': 'OFFERED', 't': now, 'baseline': None, 'accepted_at': 0, 'escrow': 0, 'left': 0, 'released': 0, 'refunded': 0, 'shortfall': 0, 'transfer_first': 0, 'transfer_at': 0, 'transfer_status': '', 'decision_first': None, 'decision_at': 0, 'decision': None, 'last_holder': '', 'readings': 0, 'settled_reason': '', 'log': []}
+ return {'state': 'OFFERED', 't': now, 'baseline': None, 'accepted_at': 0, 'escrow': 0, 'left': 0, 'released': 0, 'refunded': 0, 'shortfall': 0, 'final_due': 0, 'paid_at_decision': 0, 'transfer_first': 0, 'transfer_at': 0, 'transfer_status': '', 'decision_first': None, 'decision_at': 0, 'decision': None, 'last_holder': '', 'held_by': '', 'holder_run': None, 'held_alive': False, 'live_first': 0, 'upfront_paid': False, 'last_read': 0, 'readings': 0, 'settled_reason': '', 'log': []}
 
 def _log(s: dict, at: int, what: str, note: str='') -> None:
  s['log'].append({'at': at, 'what': what, 'note': note})
@@ -435,9 +525,9 @@ def _apply_deadlines(t: dict, s: dict, now: int, pays: list) -> None:
   _close(s, now, 'no confirmed transfer by transfer_by')
   return
  if s['transfer_at'] and now >= t['allowance_by'] + GRACE_SECONDS:
-  if s['last_holder'] == 'SELLER':
+  if s['held_by'] == 'SELLER':
    _pay(s, pays, 'buyer', s['left'], 'no decision by allowance_by and the seller holds the claim again: to the buyer')
-   _close(s, now, 'no confirmed decision by allowance_by; the last reading showed the seller as holder')
+   _close(s, now, 'no confirmed decision by allowance_by; the seller was confirmed as holder again')
   else:
    seller = s['left'] * t['no_decision_seller_bp'] // BP
    _pay(s, pays, 'seller', seller, "no decision by allowance_by: the seller's agreed share")
@@ -446,8 +536,10 @@ def _apply_deadlines(t: dict, s: dict, now: int, pays: list) -> None:
 
 def _settle_decision(t: dict, s: dict, now: int, pays: list) -> None:
  d = s['decision']
+ before = s['released']
  if d['status'] == 'ALLOWED':
   due = max(0, _price_for(t, d['amount']) - s['released'])
+  s['final_due'] = due
   s['shortfall'] = max(0, s['released'] - _price_for(t, d['amount']))
   _pay(s, pays, 'seller', due, f"allowed at {d['amount']} {t['currency']}: the price for that amount, less what was released")
   _pay(s, pays, 'buyer', s['left'], 'the rest of the escrow to the buyer')
@@ -455,54 +547,107 @@ def _settle_decision(t: dict, s: dict, now: int, pays: list) -> None:
  elif d['status'] == 'DISALLOWED':
   _pay(s, pays, 'buyer', s['left'], 'claim disallowed: what is left to the buyer')
   _close(s, now, 'claim disallowed after the transfer')
- else:
-  _pay(s, pays, 'seller', s['left'], "claim withdrawn after the transfer (the holder's act): what is left to the seller")
+ elif s['held_alive']:
+  _pay(s, pays, 'seller', s['left'], "claim withdrawn after the buyer was shown holding it live (the holder's act): what is left to the seller")
   _close(s, now, 'claim withdrawn after the transfer')
+ else:
+  _pay(s, pays, 'buyer', s['left'], 'claim withdrawn before the buyer was shown holding it live: what is left to the buyer')
+  _close(s, now, 'claim withdrawn before the buyer was shown holding it live')
+ s['paid_at_decision'] = s['released'] - before
 
-def _apply_reading(t: dict, s: dict, r: dict, now: int, pays: list) -> None:
+def _track_holder(t: dict, s: dict, r: dict, at: int) -> None:
+ if at >= t['allowance_by']:
+  return
+ if r['holder'] == 'BUYER' and r['status'] in ('PENDING', 'ALLOWED'):
+  s['held_alive'] = True
+ run = s['holder_run']
+ if run is None or run['holder'] != r['holder']:
+  s['holder_run'] = {'holder': r['holder'], 'at': at}
+ elif at - run['at'] >= t['confirm_seconds'] and s['held_by'] != r['holder'] and (not (s['held_by'] == 'SELLER' and r['holder'] != 'BUYER')):
+  s['held_by'] = r['holder']
+  _log(s, at, 'HOLDER_CONFIRMED', f"{r['holder']} seen twice, confirm_seconds apart")
+
+def _late_upfront(t: dict, s: dict, r: dict, at: int, pays: list) -> None:
+ if s['upfront_paid'] or at >= t['allowance_by']:
+  return
+ if r['holder'] != 'BUYER' or r['status'] not in ('PENDING', 'ALLOWED'):
+  s['live_first'] = 0
+  return
+ if not s['live_first']:
+  s['live_first'] = at
+  return
+ if at - s['live_first'] >= t['confirm_seconds']:
+  up = _upfront(t) if r['status'] == 'PENDING' else min(_upfront(t), _price_for(t, r['amount']))
+  up = max(0, up - s['released'])
+  s['upfront_paid'] = True
+  _log(s, at, 'UPFRONT_LATE', f'the buyer seen holding the claim live twice; upfront released: {up} wei')
+  _pay(s, pays, 'seller', up, 'upfront, after a transfer confirmed while the status was unclear')
+  if s['left'] == 0:
+   _close(s, at, 'nothing left in escrow after the upfront')
+
+def _apply_reading(t: dict, s: dict, r: dict, at: int, pays: list) -> None:
  if r['kind'] != 'READ':
   return
+ if at < s.get('last_read', 0) or (s['state'] == 'ACTIVE' and at < s['accepted_at']):
+  _log(s, at, 'IGNORED', 'stamped before a reading already applied, or before the buyer accepted')
+  return
+ s['last_read'] = at
  if s['state'] == 'OFFERED':
   good = r['holder'] == 'SELLER' and r['status'] in ('PENDING', 'ALLOWED')
-  s['baseline'] = {'at': now, 'holder': r['holder'], 'status': r['status'], 'amount': r['amount']} if good else None
-  _log(s, now, 'BASELINE', ('good: ' if good else 'not usable: ') + f"{r['holder']} {r['status']} {r['amount']}")
+  s['baseline'] = {'at': at, 'holder': r['holder'], 'status': r['status'], 'amount': r['amount']} if good else None
+  _log(s, at, 'BASELINE', ('good: ' if good else 'not usable: ') + f"{r['holder']} {r['status']} {r['amount']}")
   return
  if s['state'] != 'ACTIVE':
   return
  s['last_holder'] = r['holder']
  if not s['transfer_at']:
+  if r['holder'] == 'BUYER' and r['status'] in ('PENDING', 'ALLOWED') and (at < t['transfer_by']):
+   s['held_alive'] = True
   if r['holder'] != 'BUYER':
    s['transfer_first'] = 0
+   s['held_alive'] = False
   elif not s['transfer_first']:
-   s['transfer_first'] = now
-   _log(s, now, 'TRANSFER_SEEN', 'the buyer is shown as holder; confirmed once seen again after confirm_seconds')
-  elif now - s['transfer_first'] >= t['confirm_seconds'] and now < t['transfer_by']:
-   s['transfer_at'] = now
+   s['transfer_first'] = at
+   _log(s, at, 'TRANSFER_SEEN', 'the buyer is shown as holder; confirmed once seen again after confirm_seconds')
+  elif at - s['transfer_first'] >= t['confirm_seconds'] and at < t['transfer_by']:
+   s['transfer_at'] = at
    s['transfer_status'] = r['status']
+   s['held_by'] = 'BUYER'
+   s['holder_run'] = {'holder': 'BUYER', 'at': s['transfer_first']}
    if r['status'] == 'PENDING':
     up = _upfront(t)
    elif r['status'] == 'ALLOWED':
     up = min(_upfront(t), _price_for(t, r['amount']))
    else:
     up = 0
-   _log(s, now, 'TRANSFER_CONFIRMED', f"status {r['status']}; upfront released: {up} wei")
+   up = max(0, up - s['released'])
+   _log(s, at, 'TRANSFER_CONFIRMED', f"status {r['status']}; upfront released: {up} wei")
    _pay(s, pays, 'seller', up, 'transfer confirmed: upfront')
+   s['upfront_paid'] = r['status'] in ('PENDING', 'ALLOWED')
+   if s['left'] == 0:
+    _close(s, at, 'nothing left in escrow after the upfront')
+    return
  if not s['transfer_at'] or s['state'] != 'ACTIVE':
   return
- if r['status'] not in DECISIONS:
+ _track_holder(t, s, r, at)
+ _late_upfront(t, s, r, at, pays)
+ if s['state'] != 'ACTIVE':
+  return
+ unattributable = r['status'] == 'WITHDRAWN' and (not s['held_alive']) and (s['transfer_status'] != 'WITHDRAWN')
+ if r['status'] not in DECISIONS or unattributable:
   s['decision_first'] = None
   return
  key = {'status': r['status'], 'amount': r['amount']}
  first = s['decision_first']
  if first is None or first['status'] != key['status'] or first['amount'] != key['amount']:
-  s['decision_first'] = {'at': now, **key}
-  _log(s, now, 'DECISION_SEEN', f"{r['status']} {r['amount']}; confirmed once seen again after confirm_seconds")
+  s['decision_first'] = {'at': at, **key}
+  _log(s, at, 'DECISION_SEEN', f"{r['status']} {r['amount']}; confirmed once seen again after confirm_seconds")
   return
- if now - first['at'] >= t['confirm_seconds'] and now < t['allowance_by'] and (r['holder'] != 'SELLER'):
-  s['decision_at'] = now
+ if at - first['at'] >= t['confirm_seconds'] and at < t['allowance_by'] and (r['holder'] != 'SELLER') and (s['held_by'] != 'SELLER'):
+  s['decision_at'] = at
   s['decision'] = key
-  _log(s, now, 'DECISION_CONFIRMED', f"{r['status']} {r['amount']}")
-  _settle_decision(t, s, now, pays)
+  _log(s, at, 'DECISION_CONFIRMED', f"{r['status']} {r['amount']}")
+  _settle_decision(t, s, at, pays)
 
 @allow_storage
 @dataclass
@@ -627,7 +772,6 @@ class ClaimEscrow(gl.contract.Contract):
   _log(s, now, 'OFFERED', f'price {_price(t)} wei, upfront {_upfront(t)} wei')
   self.deals[did] = Deal(id=did, seller=seller, buyer=buyer_hex, digest=_digest(t), terms_json=_canonical(t), state_json=json.dumps(s, sort_keys=True), created_at=u256(now))
   self._index(seller, did)
-  self._index(buyer_hex, did)
   return self.get_deal(did)
 
  @gl.public.write
@@ -661,6 +805,8 @@ class ClaimEscrow(gl.contract.Contract):
    problem = "terms_digest does not match the offer's terms"
   elif s['baseline'] is None:
    problem = 'no usable baseline reading yet: read_register must first show the seller as holder, PENDING or ALLOWED'
+  elif now - s['baseline']['at'] > BASELINE_MAX_PERIODS * t['confirm_seconds']:
+   problem = f'the baseline reading is older than {BASELINE_MAX_PERIODS} confirmation periods: read the register again'
   elif value != _price(t):
    problem = f'send exactly the price: {_price(t)} wei'
   if problem:
@@ -672,6 +818,7 @@ class ClaimEscrow(gl.contract.Contract):
   s['left'] = value
   _log(s, now, 'ACCEPTED', f'{value} wei in escrow')
   self._commit(d, s, held, value, pays)
+  self._index(d.buyer, deal_id)
   return {'ok': True, 'deal': self.get_deal(deal_id)}
 
  @gl.public.write
@@ -718,9 +865,10 @@ class ClaimEscrow(gl.contract.Contract):
     return False
    return _same_outcome(leader, _read(frozen))
   r = _check_outcome(gl.vm.run_nondet(leader_fn, validator_fn))
+  stamp = self._tx_time()
   s['readings'] += 1
-  _log(s, now, 'READING', r['reason'] if r['kind'] == 'NO_READING' else f"{r['holder']} {r['status']} {r['amount']}")
-  _apply_reading(t, s, r, now, pays)
+  _log(s, stamp, 'READING', r['reason'] if r['kind'] == 'NO_READING' else f"{r['holder']} {r['status']} {r['amount']}")
+  _apply_reading(t, s, r, stamp, pays)
   self._commit(d, s, held, 0, pays)
   return {'ok': True, 'read': True, 'reading': r, 'deal': self.get_deal(deal_id)}
 
@@ -750,13 +898,13 @@ class ClaimEscrow(gl.contract.Contract):
 
  @gl.public.view
  def get_rules(self) -> dict:
-  return {'register_hosts': json.loads(self.hosts_json), 'min_confirm_seconds': int(self.min_confirm), 'grace_seconds': GRACE_SECONDS, 'anchor_chars': ANCHOR_CHARS, 'page_chars': PAGE_CHARS, 'currencies': list(ISO_CODES), 'holder_labels': list(HOLDER_LABELS), 'status_labels': list(STATUS_LABELS), 'amount_labels': list(AMOUNT_LABELS), 'status_table': dict(STATUS_TABLE), 'transferee_marks': [m.strip() for m in TRANSFEREE_MARKS], 'no_reading_reasons': list(NO_READING_REASONS), 'agreement': 'exact: kind, reason, holder class, status and allowed amount'}
+  return {'register_hosts': json.loads(self.hosts_json), 'min_confirm_seconds': int(self.min_confirm), 'grace_seconds': GRACE_SECONDS, 'baseline_max_periods': BASELINE_MAX_PERIODS, 'anchor_chars': ANCHOR_CHARS, 'page_chars': PAGE_CHARS, 'currencies': list(ISO_CODES), 'holder_labels': list(HOLDER_LABELS), 'status_labels': list(STATUS_LABELS), 'amount_labels': list(AMOUNT_LABELS), 'status_table': dict(STATUS_TABLE), 'transferee_marks': [m.strip() for m in TRANSFEREE_MARKS], 'no_reading_reasons': list(NO_READING_REASONS), 'agreement': 'exact: kind, reason, holder class, status and allowed amount'}
 
  @gl.public.view
  def get_deal(self, deal_id: str) -> dict:
   d, t, s = self._load(deal_id)
-  money = {k: str(s[k]) for k in ('escrow', 'left', 'released', 'refunded', 'shortfall')}
-  return {'id': d.id, 'seller': d.seller, 'buyer': d.buyer, 'digest': d.digest, 'created_at': int(d.created_at), 'terms': t, 'price': str(_price(t)), 'upfront': str(_upfront(t)), 'state': s['state'], 'clock': s['t'], 'baseline': s['baseline'], 'accepted_at': s['accepted_at'], 'money': money, 'transfer': {'first_seen': s['transfer_first'], 'confirmed_at': s['transfer_at'], 'status': s['transfer_status']}, 'decision': {'first_seen': s['decision_first'], 'confirmed_at': s['decision_at'], 'confirmed': s['decision']}, 'last_holder': s['last_holder'], 'readings': s['readings'], 'settled_reason': s['settled_reason'], 'log': s['log']}
+  money = {k: str(s[k]) for k in ('escrow', 'left', 'released', 'refunded', 'shortfall', 'final_due', 'paid_at_decision')}
+  return {'id': d.id, 'seller': d.seller, 'buyer': d.buyer, 'digest': d.digest, 'created_at': int(d.created_at), 'terms': t, 'price': str(_price(t)), 'upfront': str(_upfront(t)), 'state': s['state'], 'clock': s['t'], 'baseline': s['baseline'], 'accepted_at': s['accepted_at'], 'money': money, 'transfer': {'first_seen': s['transfer_first'], 'confirmed_at': s['transfer_at'], 'status': s['transfer_status']}, 'decision': {'first_seen': s['decision_first'], 'confirmed_at': s['decision_at'], 'confirmed': s['decision']}, 'last_holder': s['last_holder'], 'held_by': s['held_by'], 'held_alive': s['held_alive'], 'readings': s['readings'], 'settled_reason': s['settled_reason'], 'log': s['log']}
 
  @gl.public.view
  def get_deals_of(self, address: str) -> list:

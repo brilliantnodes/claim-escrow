@@ -78,7 +78,8 @@ MAX_UNITS_PER_GEN = 10**12
 MAX_CONFIRM_SECONDS = 30 * 86400
 MIN_CONFIRM_FLOOR = 60
 MAX_HORIZON_SECONDS = 5 * 366 * 86400
-GRACE_SECONDS = 1800  # deadlines take effect this late, so a reading sent just before one has been decided
+GRACE_SECONDS = 1800  # deadlines take effect this late, so a reading stamped just before one is still counted
+BASELINE_MAX_PERIODS = 3  # the baseline reading must be at most this many confirmation periods old at accept
 PAGE_CHARS = 12000
 ANCHOR_CHARS = 80
 RENDER_WAIT = "2s"
@@ -115,7 +116,8 @@ DIGITS = "0123456789"
 CURRENCY_SYMBOLS = {"EUR": "€", "USD": "$", "GBP": "£", "JPY": "¥"}
 ISO_CODES = ("USD", "EUR", "GBP", "CHF", "JPY", "CAD", "AUD", "SEK", "NOK", "DKK", "SGD", "HKD")
 SYMBOLS = ("$", "£", "¥", "€", "₹", "₩", "₽", "₺", "₦", "₪", "₫", "฿", "₣", "₱")
-SCALE_WORDS = ("thousand", "thousands", "k", "million", "millions", "mn", "m", "mm", "billion", "billions", "bn")
+REF_WORDS = ("no", "nos", "docket", "dkt", "ecf", "doc", "docs", "note", "notes")  # 'Docket Nos. 12,15' is a list, not a decimal comma
+LEAD_MARKS = "\u2022*\u00b7>#"  # a label may follow these at the start of its line (bullets, headings)
 
 # ------------------------------------------------- deterministic helpers
 
@@ -151,8 +153,8 @@ def _url_problem(url: str, hosts: list) -> str:
         return f"register_url must be 1 to {MAX_URL_LEN} characters"
     if not url.startswith("https://"):
         return "register_url must start with https://"
-    if any(c.isspace() or ord(c) < 32 for c in url) or "\\" in url or "#" in url:
-        return "register_url must not contain spaces, backslashes or #"
+    if any(c.isspace() or ord(c) < 32 for c in url) or "\\" in url or "#" in url or "?" in url:
+        return "register_url must not contain spaces, backslashes, ? or #"
     authority = url.split("://", 1)[1]
     for sep in ("/", "?"):
         authority = authority.split(sep, 1)[0]
@@ -186,8 +188,11 @@ def _fmt(ts: int) -> str:
 
 def _norm(v) -> str:
     """Lower case, one space for any run of white space (including
-    non-breaking spaces), the minus sign and en dash as '-'."""
-    s = str(v or "").replace(" ", " ").replace(" ", " ").replace("−", "-").replace("–", "-")
+    non-breaking spaces), the minus sign and every dash as '-' (so 'Filed —
+    Pending' is 'filed - pending')."""
+    s = str(v or "").replace("\u00a0", " ").replace("\u202f", " ")
+    for d in ("\u2212", "\u2013", "\u2014", "\u2012", "\u2015"):
+        s = s.replace(d, "-")
     return " ".join(s.split()).lower()
 
 
@@ -230,7 +235,12 @@ def _clean_page(text) -> str:
         text = bytes(text).decode("utf-8", errors="replace")
     text = str(text or "")
     text = text.replace(PAGE_BEGIN, " ").replace(PAGE_END, " ").replace("=====", " ")
-    return text[:PAGE_CHARS]
+    if len(text) > PAGE_CHARS:
+        text = text[:PAGE_CHARS]
+        nl = text.rfind("\n")
+        text = text[:nl] if nl >= 0 else ""  # never keep a line cut in two (a number, a status phrase, a name)
+        text += "\n(cut)"  # what followed the last line is unknown: a field on that line counts as qualified
+    return text
 
 
 def _parse_llm_json(raw) -> dict:
@@ -246,11 +256,47 @@ def _parse_llm_json(raw) -> dict:
     return out
 
 
+def _drop_refs(s: str) -> str:
+    """Number lists after a reference word ('Docket Nos. 12,15', 'note 4,
+    5 and 7') replaced by a space, so they are not read as decimal commas."""
+    out, i, n = [], 0, len(s)
+    while i < n:
+        if s[i].isalpha() and (i == 0 or not s[i - 1].isalnum()):
+            j = i
+            while j < n and s[j].isalpha():
+                j += 1
+            if s[i:j] in REF_WORDS:
+                k = j
+                if k < n and s[k] == ".":
+                    k += 1
+                while k < n and s[k] in " #":
+                    k += 1
+                if k < n and s[k] in DIGITS and k > j:
+                    while k < n and (s[k] in DIGITS or s[k] in ", &-" or s.startswith("and ", k)):
+                        k += 4 if s.startswith("and ", k) else 1
+                    out.append(s[i:j] + " ")
+                    i = k
+                    continue
+            out.append(s[i:j])
+            i = j
+            continue
+        out.append(s[i])
+        i += 1
+    return "".join(out)
+
+
+def _dotted_address(r: str) -> bool:
+    parts = r.split(".")
+    return len(parts) == 4 and all(1 <= len(x) <= 3 and all(c in DIGITS for c in x) and int(x) <= 255 for x in parts)
+
+
 def _decimal_comma_page(page: str) -> bool:
     """True if the page's own numbers show decimal-comma notation ('12,5',
-    '1.234,56', '1.234.567'). Scanned in code, not left to the model."""
+    '1.234,56', '1.234.567'). Scanned in code, not left to the model.
+    Reference lists ('Docket Nos. 12,15') and dotted addresses
+    ('192.168.100.200') are skipped."""
     runs, cur = [], ""
-    for ch in page + " ":
+    for ch in _drop_refs(str(page or "").lower()) + " ":
         if ch in DIGITS or (ch in ".," and cur != ""):
             cur += ch
         else:
@@ -258,6 +304,8 @@ def _decimal_comma_page(page: str) -> bool:
                 runs.append(cur.rstrip(".,"))
             cur = ""
     for r in runs:
+        if _dotted_address(r):
+            continue
         if "," in r:
             tail = r.rsplit(",", 1)[1]
             if 1 <= len(tail) <= 2 and all(c in DIGITS for c in tail):
@@ -336,40 +384,92 @@ def _page_lines(page) -> str:
     return "\n".join(_norm(line) for line in str(page or "").splitlines())
 
 
-def _line_anchored(pl: str, label_n: str, value_n: str) -> bool:
-    """On this validator's copy of the page (from _page_lines): the label is
-    printed, followed only by separators (spaces, line breaks, ':', '|',
-    '-', '=') for at most ANCHOR_CHARS characters, then by the value, which
-    runs to the end of its line. So a copy must be the whole value on the
-    page: 'Allowed' is not a copy of 'Allowed for voting purposes only',
-    '$1,000,000' is not a copy of '$1,000,000.00', and 'Status' does not
-    anchor inside 'Claim status history: Pending'."""
+def _line_anchored(pl: str, label_n: str, value_n: str, want_start: bool = False):
+    """On this validator's copy of the page (from _page_lines): the label
+    starts its line (only spaces, bullets or separators before it), is
+    followed only by separators (spaces, ':', '|', '-', '=', at most one
+    line break) for at most ANCHOR_CHARS characters, then by the value,
+    which runs to the end of its line (a closing '|' allowed). So a copy must be the whole label and the
+    whole value on the page: 'Status' does not anchor inside 'Voting status:
+    Allowed', 'Creditor' not inside 'Original creditor: ...', and 'Allowed'
+    is not a copy of 'Allowed for voting purposes only'. Returns the line,
+    or None."""
     if label_n == "" or value_n == "" or "\n" in value_n:
-        return False
+        return None if not want_start else -1
     i = pl.find(label_n)
     while i >= 0:
         a, b = i, i + len(label_n)
-        if (a == 0 or not pl[a - 1].isalnum()) and (b == len(pl) or pl[b] in SEPARATORS):
-            j = b
-            while j < len(pl) and j - b <= ANCHOR_CHARS and pl[j] in SEPARATORS:
+        start = pl.rfind("\n", 0, a) + 1
+        if all(c in SEPARATORS or c in LEAD_MARKS for c in pl[start:a]) and (b == len(pl) or pl[b] in SEPARATORS):
+            j, breaks = b, 0
+            while j < len(pl) and j - b <= ANCHOR_CHARS and pl[j] in SEPARATORS and breaks + (pl[j] == "\n") <= 1:
+                breaks += pl[j] == "\n"
                 j += 1
             if j - b <= ANCHOR_CHARS and pl.startswith(value_n, j):
                 e = j + len(value_n)
-                if e == len(pl) or pl[e] == "\n":
-                    return True
+                eol = pl.find("\n", e)
+                eol = len(pl) if eol < 0 else eol
+                if all(c in " |" for c in pl[e:eol]):
+                    return pl[start:eol] if not want_start else start
         i = pl.find(label_n, i + 1)
+    return None if not want_start else -1
+
+
+QUALIFIERS = ("partial", "partially", "voting purposes", "subject to", "reduced", "reserved", "disputed", "contingent", "unliquidated", "pending objection")
+
+
+def _label_form_lines(pl: str, labels) -> list:
+    """Start offsets of the lines that begin with one of these labels written
+    as a label: after separators or bullets, the label, then optional spaces
+    and ':', '|', '=' or the end of the line ('Status: Withdrawn' in an
+    objection block, 'Creditor:' in a notice address)."""
+    out, pos = [], 0
+    for line in pl.split("\n"):
+        k = 0
+        while k < len(line) and (line[k] in SEPARATORS or line[k] in LEAD_MARKS):
+            k += 1
+        rest = line[k:]
+        for lab in labels:
+            if rest.startswith(lab):
+                tail = rest[len(lab):].lstrip(" ")
+                if tail == "" or tail[0] in ":|=":
+                    out.append(pos)
+                    break
+        pos += len(line) + 1
+    return out
+
+
+def _line_start(pl: str, label_n: str, value_n: str) -> int:
+    """Where the anchored label's line starts (see _line_anchored), or -1."""
+    return _line_anchored(pl, label_n, value_n, True)
+
+
+def _qualified_next(pl: str, start: int, label_n: str, value_n: str) -> bool:
+    """The first non-blank line after an anchored field (after its value's
+    line, when the value starts the next line) qualifies it: it opens with a
+    bracket or names a partial transfer, voting purposes only, a reduction and
+    the like. A field on the last line of a cut page counts as qualified."""
+    used = (_line_anchored(pl, label_n, value_n) or "").count("\n") + 1
+    lines = pl[start:].split("\n")
+    for nxt in lines[used:]:
+        n = nxt.strip(" |\t\u00a0")
+        if n == "":
+            continue
+        if n.startswith("(") or any(w in n for w in QUALIFIERS) or n.startswith(tuple(m.strip() for m in TRANSFEREE_MARKS)):
+            return True  # a qualifier, or a holder's name that wraps on to the next line
+        break
     return False
 
 
 def _claim_number_on_page(page_n: str, number: str) -> bool:
     """The claim number is printed as a whole token: '1042' does not match
-    inside '21042', '1042-1' or '1042a'."""
+    inside '21042', '1042-1', '1042a', '1042.1' or '1042/2'."""
     n = number.lower()
     i = page_n.find(n)
     while i >= 0:
         a, b = i, i + len(n)
-        before = a == 0 or not (page_n[a - 1].isalnum() or page_n[a - 1] == "-")
-        after = b >= len(page_n) or not (page_n[b].isalnum() or (page_n[b] == "-" and b + 1 < len(page_n) and page_n[b + 1].isalnum()))
+        before = a == 0 or not (page_n[a - 1].isalnum() or page_n[a - 1] == "-" or (page_n[a - 1] in "./" and a > 1 and page_n[a - 2].isalnum()))
+        after = b >= len(page_n) or not (page_n[b].isalnum() or (page_n[b] in "-./" and b + 1 < len(page_n) and page_n[b + 1].isalnum()))
         if before and after:
             return True
         i = page_n.find(n, i + 1)
@@ -378,18 +478,26 @@ def _claim_number_on_page(page_n: str, number: str) -> bool:
 
 def _holder_class(value, t: dict) -> str:
     """BUYER, SELLER or OTHER from the holder as printed. A holder written
-    'X as transferee of Y' is X. Names are compared as whole words, all of
-    them, after punctuation is turned into spaces."""
-    s = " " + _norm(value) + " "
+    'X as transferee of Y' or 'X (as transferee of Y)' is X, and only if Y
+    is the other party's name, word for word: a transfer from someone else,
+    or one with any note after the names ('(partial: $125,000.00)'), is
+    OTHER.
+    Names are compared as whole words, all of them, after punctuation is
+    turned into spaces."""
+    s = " " + " ".join(_norm(value).replace("(", " ").replace(")", " ").split()) + " "
+    buyer, seller = _name_words(t["buyer_name"]), _name_words(t["seller_name"])
+    source = None
     for mark in TRANSFEREE_MARKS:
         k = s.find(mark)
         if k >= 0:
+            source = _name_words(s[k + len(mark):])
             s = s[:k]
+            break
     words = _name_words(s)
-    if words == _name_words(t["buyer_name"]):
+    if words == buyer and source in (None, seller):
         return "BUYER"
-    if words == _name_words(t["seller_name"]):
-        return "SELLER"
+    if words == seller and source in (None, buyer):
+        return "SELLER"  # 'Seller as transferee of Buyer': the claim moved back
     return "OTHER"
 
 
@@ -416,17 +524,27 @@ def _interpret(t: dict, ans: dict, page: str) -> dict:
     h, st, am = fields["holder"], fields["status"], fields["allowed_amount"]
     if _norm_label(h.get("label")) not in HOLDER_LABELS or _norm_label(st.get("label")) not in STATUS_LABELS:
         return {"kind": "NO_READING", "reason": "N2_LABEL"}
-    if not _line_anchored(pl, _norm_label(h.get("label")), _norm(h.get("value"))):
+    h_at = _line_start(pl, _norm_label(h.get("label")), _norm(h.get("value")))
+    st_at = _line_start(pl, _norm_label(st.get("label")), _norm(st.get("value")))
+    if h_at < 0 or st_at < 0:
         return {"kind": "NO_READING", "reason": "N2_NOT_ANCHORED"}
-    if not _line_anchored(pl, _norm_label(st.get("label")), _norm(st.get("value"))):
-        return {"kind": "NO_READING", "reason": "N2_NOT_ANCHORED"}
+    if any(x != h_at for x in _label_form_lines(pl, HOLDER_LABELS)) or any(x != st_at for x in _label_form_lines(pl, STATUS_LABELS)):
+        return {"kind": "NO_READING", "reason": "N2_AMBIGUOUS"}  # another line is written as a holder or status line
+    if any(w in pl for w in ("partial transfer", "partial assignment", "transfer of part")):
+        return {"kind": "NO_READING", "reason": "N2_AMBIGUOUS"}  # the page shows part of the claim transferred
+    if (_qualified_next(pl, h_at, _norm_label(h.get("label")), _norm(h.get("value")))
+            or _qualified_next(pl, st_at, _norm_label(st.get("label")), _norm(st.get("value")))):
+        return {"kind": "NO_READING", "reason": "N2_AMBIGUOUS"}  # a partial transfer, voting purposes only, a reduction...
     status = STATUS_TABLE.get(_norm_status(st.get("value")), "UNCLEAR")
     amount = 0
     if status == "ALLOWED":
         if _norm_label(am.get("label")) not in AMOUNT_LABELS:
             return {"kind": "NO_READING", "reason": "N2_LABEL"}
-        if not _line_anchored(pl, _norm_label(am.get("label")), _norm(am.get("value"))):
+        am_at = _line_start(pl, _norm_label(am.get("label")), _norm(am.get("value")))
+        if am_at < 0:
             return {"kind": "NO_READING", "reason": "N2_NOT_ANCHORED"}
+        if any(x != am_at for x in _label_form_lines(pl, AMOUNT_LABELS)) or _qualified_next(pl, am_at, _norm_label(am.get("label")), _norm(am.get("value"))):
+            return {"kind": "NO_READING", "reason": "N2_AMBIGUOUS"}
         if not _currency_ok(ans.get("currency_on_page"), t["currency"]):
             return {"kind": "NO_READING", "reason": "N2_CURRENCY"}
         units = _whole_units(am.get("value"), t["currency"])
@@ -601,13 +719,20 @@ def _new_state(now: int) -> dict:
         "refunded": 0,  # paid back to the buyer so far
         "shortfall": 0,
         "final_due": 0,  # what the seller was due at the decision (the price for the allowed amount, less what it already had)
+        "paid_at_decision": 0,  # what the seller was actually paid at the decision (less, if the seller had refunded part)
         "transfer_first": 0,
         "transfer_at": 0,
         "transfer_status": "",
         "decision_first": None,  # {"at", "status", "amount"}
         "decision_at": 0,
         "decision": None,
-        "last_holder": "",
+        "last_holder": "",  # the last reading's holder, for display only
+        "held_by": "",  # the holder confirmed after the transfer (seen twice, confirm_seconds apart, before allowance_by)
+        "holder_run": None,  # {"holder", "at"}: the first of the current run of readings showing the same holder
+        "held_alive": False,  # the buyer was shown holding the claim while it was PENDING or ALLOWED
+        "live_first": 0,  # after the transfer, the first reading with the buyer holding the claim live (for a late upfront)
+        "upfront_paid": False,
+        "last_read": 0,  # the latest stamp of a reading applied: an older one processed later is ignored
         "readings": 0,
         "settled_reason": "",
         "log": [],
@@ -652,9 +777,9 @@ def _apply_deadlines(t: dict, s: dict, now: int, pays: list) -> None:
         _close(s, now, "no confirmed transfer by transfer_by")
         return
     if s["transfer_at"] and now >= t["allowance_by"] + GRACE_SECONDS:
-        if s["last_holder"] == "SELLER":
+        if s["held_by"] == "SELLER":
             _pay(s, pays, "buyer", s["left"], "no decision by allowance_by and the seller holds the claim again: to the buyer")
-            _close(s, now, "no confirmed decision by allowance_by; the last reading showed the seller as holder")
+            _close(s, now, "no confirmed decision by allowance_by; the seller was confirmed as holder again")
         else:
             seller = s["left"] * t["no_decision_seller_bp"] // BP
             _pay(s, pays, "seller", seller, "no decision by allowance_by: the seller's agreed share")
@@ -664,6 +789,7 @@ def _apply_deadlines(t: dict, s: dict, now: int, pays: list) -> None:
 
 def _settle_decision(t: dict, s: dict, now: int, pays: list) -> None:
     d = s["decision"]
+    before = s["released"]
     if d["status"] == "ALLOWED":
         due = max(0, _price_for(t, d["amount"]) - s["released"])
         s["final_due"] = due
@@ -674,56 +800,121 @@ def _settle_decision(t: dict, s: dict, now: int, pays: list) -> None:
     elif d["status"] == "DISALLOWED":
         _pay(s, pays, "buyer", s["left"], "claim disallowed: what is left to the buyer")
         _close(s, now, "claim disallowed after the transfer")
-    else:
-        _pay(s, pays, "seller", s["left"], "claim withdrawn after the transfer (the holder's act): what is left to the seller")
+    elif s["held_alive"]:
+        _pay(s, pays, "seller", s["left"], "claim withdrawn after the buyer was shown holding it live (the holder's act): what is left to the seller")
         _close(s, now, "claim withdrawn after the transfer")
+    else:
+        _pay(s, pays, "buyer", s["left"], "claim withdrawn before the buyer was shown holding it live: what is left to the buyer")
+        _close(s, now, "claim withdrawn before the buyer was shown holding it live")
+    s["paid_at_decision"] = s["released"] - before
 
 
-def _apply_reading(t: dict, s: dict, r: dict, now: int, pays: list) -> None:
-    """One agreed reading. NO_READING changes nothing."""
+def _track_holder(t: dict, s: dict, r: dict, at: int) -> None:
+    """After the transfer, before allowance_by: the holder counts as changed
+    only when the same holder is seen twice, confirm_seconds apart, so one
+    look never moves money; and note when the buyer is seen holding a live
+    claim."""
+    if at >= t["allowance_by"]:
+        return
+    if r["holder"] == "BUYER" and r["status"] in ("PENDING", "ALLOWED"):
+        s["held_alive"] = True
+    run = s["holder_run"]
+    if run is None or run["holder"] != r["holder"]:
+        s["holder_run"] = {"holder": r["holder"], "at": at}
+    elif at - run["at"] >= t["confirm_seconds"] and s["held_by"] != r["holder"] and not (s["held_by"] == "SELLER" and r["holder"] != "BUYER"):
+        # once the seller holds the claim again, only the buyer seen twice clears it
+        s["held_by"] = r["holder"]
+        _log(s, at, "HOLDER_CONFIRMED", f"{r['holder']} seen twice, confirm_seconds apart")
+
+
+def _late_upfront(t: dict, s: dict, r: dict, at: int, pays: list) -> None:
+    """If the transfer was confirmed while the status was unclear, the upfront
+    is released once the buyer is seen holding the claim live twice,
+    confirm_seconds apart, before allowance_by."""
+    if s["upfront_paid"] or at >= t["allowance_by"]:
+        return
+    if r["holder"] != "BUYER" or r["status"] not in ("PENDING", "ALLOWED"):
+        s["live_first"] = 0
+        return
+    if not s["live_first"]:
+        s["live_first"] = at
+        return
+    if at - s["live_first"] >= t["confirm_seconds"]:
+        up = _upfront(t) if r["status"] == "PENDING" else min(_upfront(t), _price_for(t, r["amount"]))
+        up = max(0, up - s["released"])  # the upfront tops the seller up to its level: a release made by hand counts
+        s["upfront_paid"] = True
+        _log(s, at, "UPFRONT_LATE", f"the buyer seen holding the claim live twice; upfront released: {up} wei")
+        _pay(s, pays, "seller", up, "upfront, after a transfer confirmed while the status was unclear")
+        if s["left"] == 0:
+            _close(s, at, "nothing left in escrow after the upfront")
+
+
+def _apply_reading(t: dict, s: dict, r: dict, at: int, pays: list) -> None:
+    """One agreed reading, counted at its own transaction time `at`, so a
+    reading stamped before a deadline is counted even if processed after a
+    later write. NO_READING changes nothing."""
     if r["kind"] != "READ":
         return
+    if at < s.get("last_read", 0) or (s["state"] == "ACTIVE" and at < s["accepted_at"]):
+        _log(s, at, "IGNORED", "stamped before a reading already applied, or before the buyer accepted")
+        return
+    s["last_read"] = at
     if s["state"] == "OFFERED":
         good = r["holder"] == "SELLER" and r["status"] in ("PENDING", "ALLOWED")
-        s["baseline"] = {"at": now, "holder": r["holder"], "status": r["status"], "amount": r["amount"]} if good else None
-        _log(s, now, "BASELINE", ("good: " if good else "not usable: ") + f"{r['holder']} {r['status']} {r['amount']}")
+        s["baseline"] = {"at": at, "holder": r["holder"], "status": r["status"], "amount": r["amount"]} if good else None
+        _log(s, at, "BASELINE", ("good: " if good else "not usable: ") + f"{r['holder']} {r['status']} {r['amount']}")
         return
     if s["state"] != "ACTIVE":
         return
     s["last_holder"] = r["holder"]
     if not s["transfer_at"]:
+        if r["holder"] == "BUYER" and r["status"] in ("PENDING", "ALLOWED") and at < t["transfer_by"]:
+            s["held_alive"] = True  # the buyer shown holding the claim live, first sighting included
         if r["holder"] != "BUYER":
             s["transfer_first"] = 0
+            s["held_alive"] = False  # the sighting was not sustained
         elif not s["transfer_first"]:
-            s["transfer_first"] = now
-            _log(s, now, "TRANSFER_SEEN", "the buyer is shown as holder; confirmed once seen again after confirm_seconds")
-        elif now - s["transfer_first"] >= t["confirm_seconds"] and now < t["transfer_by"]:
-            s["transfer_at"] = now
+            s["transfer_first"] = at
+            _log(s, at, "TRANSFER_SEEN", "the buyer is shown as holder; confirmed once seen again after confirm_seconds")
+        elif at - s["transfer_first"] >= t["confirm_seconds"] and at < t["transfer_by"]:
+            s["transfer_at"] = at
             s["transfer_status"] = r["status"]
+            s["held_by"] = "BUYER"
+            s["holder_run"] = {"holder": "BUYER", "at": s["transfer_first"]}
             if r["status"] == "PENDING":
                 up = _upfront(t)
             elif r["status"] == "ALLOWED":
                 up = min(_upfront(t), _price_for(t, r["amount"]))
             else:
                 up = 0
-            _log(s, now, "TRANSFER_CONFIRMED", f"status {r['status']}; upfront released: {up} wei")
+            up = max(0, up - s["released"])  # the upfront tops the seller up to its level: earlier releases count
+            _log(s, at, "TRANSFER_CONFIRMED", f"status {r['status']}; upfront released: {up} wei")
             _pay(s, pays, "seller", up, "transfer confirmed: upfront")
+            s["upfront_paid"] = r["status"] in ("PENDING", "ALLOWED")
+            if s["left"] == 0:
+                _close(s, at, "nothing left in escrow after the upfront")
+                return
     if not s["transfer_at"] or s["state"] != "ACTIVE":
         return
-    if r["status"] not in DECISIONS:
+    _track_holder(t, s, r, at)
+    _late_upfront(t, s, r, at, pays)
+    if s["state"] != "ACTIVE":
+        return
+    unattributable = r["status"] == "WITHDRAWN" and not s["held_alive"] and s["transfer_status"] != "WITHDRAWN"
+    if r["status"] not in DECISIONS or unattributable:  # a withdrawal nobody can attribute decides nothing: the long stop splits
         s["decision_first"] = None
         return
     key = {"status": r["status"], "amount": r["amount"]}
     first = s["decision_first"]
     if first is None or first["status"] != key["status"] or first["amount"] != key["amount"]:
-        s["decision_first"] = {"at": now, **key}
-        _log(s, now, "DECISION_SEEN", f"{r['status']} {r['amount']}; confirmed once seen again after confirm_seconds")
+        s["decision_first"] = {"at": at, **key}
+        _log(s, at, "DECISION_SEEN", f"{r['status']} {r['amount']}; confirmed once seen again after confirm_seconds")
         return
-    if now - first["at"] >= t["confirm_seconds"] and now < t["allowance_by"] and r["holder"] != "SELLER":
-        s["decision_at"] = now
+    if at - first["at"] >= t["confirm_seconds"] and at < t["allowance_by"] and r["holder"] != "SELLER" and s["held_by"] != "SELLER":
+        s["decision_at"] = at
         s["decision"] = key
-        _log(s, now, "DECISION_CONFIRMED", f"{r['status']} {r['amount']}")
-        _settle_decision(t, s, now, pays)
+        _log(s, at, "DECISION_CONFIRMED", f"{r['status']} {r['amount']}")
+        _settle_decision(t, s, at, pays)
 
 
 # -------------------------------------------------------------- the contract
@@ -872,8 +1063,7 @@ class ClaimEscrow(gl.Contract):
         s = _new_state(now)
         _log(s, now, "OFFERED", f"price {_price(t)} wei, upfront {_upfront(t)} wei")
         self.deals[did] = Deal(id=did, seller=seller, buyer=buyer_hex, digest=_digest(t), terms_json=_canonical(t), state_json=json.dumps(s, sort_keys=True), created_at=u256(now))
-        self._index(seller, did)
-        self._index(buyer_hex, did)
+        self._index(seller, did)  # the buyer is indexed when it accepts, so nobody can flood a buyer's list with offers
         return self.get_deal(did)
 
     @gl.public.write
@@ -912,6 +1102,8 @@ class ClaimEscrow(gl.Contract):
             problem = "terms_digest does not match the offer's terms"
         elif s["baseline"] is None:
             problem = "no usable baseline reading yet: read_register must first show the seller as holder, PENDING or ALLOWED"
+        elif now - s["baseline"]["at"] > BASELINE_MAX_PERIODS * t["confirm_seconds"]:
+            problem = f"the baseline reading is older than {BASELINE_MAX_PERIODS} confirmation periods: read the register again"
         elif value != _price(t):
             problem = f"send exactly the price: {_price(t)} wei"
         if problem:
@@ -923,6 +1115,7 @@ class ClaimEscrow(gl.Contract):
         s["left"] = value
         _log(s, now, "ACCEPTED", f"{value} wei in escrow")
         self._commit(d, s, held, value, pays)
+        self._index(d.buyer, deal_id)
         return {"ok": True, "deal": self.get_deal(deal_id)}
 
     @gl.public.write
@@ -976,9 +1169,10 @@ class ClaimEscrow(gl.Contract):
             return _same_outcome(leader, _read(frozen))
 
         r = _check_outcome(gl.vm.run_nondet_unsafe(leader_fn, validator_fn))
+        stamp = self._tx_time()  # counts and cut-offs use the reading's own stamp; deadlines use the deal clock
         s["readings"] += 1
-        _log(s, now, "READING", r["reason"] if r["kind"] == "NO_READING" else f"{r['holder']} {r['status']} {r['amount']}")
-        _apply_reading(t, s, r, now, pays)
+        _log(s, stamp, "READING", r["reason"] if r["kind"] == "NO_READING" else f"{r['holder']} {r['status']} {r['amount']}")
+        _apply_reading(t, s, r, stamp, pays)
         self._commit(d, s, held, 0, pays)
         return {"ok": True, "read": True, "reading": r, "deal": self.get_deal(deal_id)}
 
@@ -1018,6 +1212,7 @@ class ClaimEscrow(gl.Contract):
             "register_hosts": json.loads(self.hosts_json),
             "min_confirm_seconds": int(self.min_confirm),
             "grace_seconds": GRACE_SECONDS,
+            "baseline_max_periods": BASELINE_MAX_PERIODS,
             "anchor_chars": ANCHOR_CHARS,
             "page_chars": PAGE_CHARS,
             "currencies": list(ISO_CODES),
@@ -1033,14 +1228,15 @@ class ClaimEscrow(gl.Contract):
     @gl.public.view
     def get_deal(self, deal_id: str) -> dict:
         d, t, s = self._load(deal_id)
-        money = {k: str(s[k]) for k in ("escrow", "left", "released", "refunded", "shortfall", "final_due")}
+        money = {k: str(s[k]) for k in ("escrow", "left", "released", "refunded", "shortfall", "final_due", "paid_at_decision")}
         return {
             "id": d.id, "seller": d.seller, "buyer": d.buyer, "digest": d.digest, "created_at": int(d.created_at),
             "terms": t, "price": str(_price(t)), "upfront": str(_upfront(t)),
             "state": s["state"], "clock": s["t"], "baseline": s["baseline"], "accepted_at": s["accepted_at"], "money": money,
             "transfer": {"first_seen": s["transfer_first"], "confirmed_at": s["transfer_at"], "status": s["transfer_status"]},
             "decision": {"first_seen": s["decision_first"], "confirmed_at": s["decision_at"], "confirmed": s["decision"]},
-            "last_holder": s["last_holder"], "readings": s["readings"], "settled_reason": s["settled_reason"], "log": s["log"],
+            "last_holder": s["last_holder"], "held_by": s["held_by"], "held_alive": s["held_alive"],
+            "readings": s["readings"], "settled_reason": s["settled_reason"], "log": s["log"],
         }
 
     @gl.public.view

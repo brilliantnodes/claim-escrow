@@ -4,31 +4,160 @@
  "case_number": "26-10432",
  "buyer_name": "Harrowfield Credit Partners LP",
  "confirm_seconds": 600,
- "units_per_gen": {"studio": 100000, "bradbury": 10000000},
+ "units_per_gen": {
+  "studio": 100000,
+  "bradbury": 10000000
+ },
  "cases": [
-  {"key": "full", "title": "Allowed in full", "claim_number": "1042", "seller_name": "Quenby Tool & Die LLC", "filed": "2026-09-14",
-   "face_amount": 1250000, "claim_amount_text": "$1,250,000.00", "rate_bp": 6000, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Allowed", "allowed": "$1,250,000.00"}, "expect": "seller gets the whole price"},
-  {"key": "eighty", "title": "Allowed at 80%", "claim_number": "1077", "seller_name": "Brasswick Conveyor Parts LLC", "filed": "2026-09-18",
-   "face_amount": 1000000, "claim_amount_text": "$1,000,000.00", "rate_bp": 5500, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Allowed", "allowed": "$800,000.00"}, "expect": "seller gets the price for $800,000; buyer the rest"},
-  {"key": "shortfall", "title": "Allowed at 50% with a 60% upfront", "claim_number": "1103", "seller_name": "Velloran Packaging Co.", "filed": "2026-09-21",
-   "face_amount": 800000, "claim_amount_text": "$800,000.00", "rate_bp": 6000, "upfront_bp": 6000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Allowed", "allowed": "$400,000.00"}, "expect": "seller keeps the upfront; buyer gets the holdback; shortfall recorded"},
-  {"key": "disallowed", "title": "Disallowed after the transfer", "claim_number": "1129", "seller_name": "Tamsford Cold Storage Inc.", "filed": "2026-09-23",
-   "face_amount": 600000, "claim_amount_text": "$600,000.00", "rate_bp": 5000, "upfront_bp": 4000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Disallowed by court order"}, "expect": "seller keeps the upfront; buyer gets the holdback"},
-  {"key": "withdrawn", "title": "Withdrawn after the transfer", "claim_number": "1156", "seller_name": "Kindrell Tire Service LLC", "filed": "2026-09-25",
-   "face_amount": 500000, "claim_amount_text": "$500,000.00", "rate_bp": 5000, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Withdrawn by claimant"}, "expect": "seller gets everything (withdrawing is the holder's act)"},
-  {"key": "no_transfer", "title": "Never transferred", "claim_number": "1188", "seller_name": "Orvane Fuel Supply Inc.", "filed": "2026-09-29",
-   "face_amount": 700000, "claim_amount_text": "$700,000.00", "rate_bp": 5000, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "transfer": false, "expect": "buyer refunded at transfer_by"},
-  {"key": "unclear", "title": "Unclear status until the long stop", "claim_number": "1204", "seller_name": "Gristmoor Signage LLC", "filed": "2026-10-02",
-   "face_amount": 900000, "claim_amount_text": "$900,000.00", "rate_bp": 5000, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Allowed for voting purposes only", "allowed": "$900,000.00"}, "expect": "no decision; split by no_decision_seller_bp at allowance_by"},
-  {"key": "one_sided", "title": "One-sided release and refund, then allowed in full", "claim_number": "1231", "seller_name": "Sallowby Uniform Rentals Inc.", "filed": "2026-10-06",
-   "face_amount": 1000000, "claim_amount_text": "$1,000,000.00", "rate_bp": 5000, "upfront_bp": 5000, "no_decision_seller_bp": 7000,
-   "decision": {"status": "Allowed", "allowed": "$1,000,000.00"}, "release_tenths": 1, "refund_tenths": 1, "expect": "the release counts against the final price; the refund stays with the buyer"}
+  {
+   "key": "full",
+   "title": "Allowed in full",
+   "claim_number": "1042",
+   "seller_name": "Quenby Tool & Die LLC",
+   "filed": "2026-09-14",
+   "face_amount": 1250000,
+   "claim_amount_text": "$1,250,000.00",
+   "rate_bp": 6000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Allowed",
+    "allowed": "$1,250,000.00"
+   },
+   "expect": "seller gets the whole price"
+  },
+  {
+   "key": "eighty",
+   "title": "Allowed at 80%",
+   "claim_number": "1077",
+   "seller_name": "Brasswick Conveyor Parts LLC",
+   "filed": "2026-09-18",
+   "face_amount": 1000000,
+   "claim_amount_text": "$1,000,000.00",
+   "rate_bp": 5500,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Allowed",
+    "allowed": "$800,000.00"
+   },
+   "expect": "seller gets the price for $800,000; buyer the rest"
+  },
+  {
+   "key": "shortfall",
+   "title": "Allowed at 50% with a 60% upfront",
+   "claim_number": "1103",
+   "seller_name": "Velloran Packaging Co.",
+   "filed": "2026-09-21",
+   "face_amount": 800000,
+   "claim_amount_text": "$800,000.00",
+   "rate_bp": 6000,
+   "upfront_bp": 6000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Allowed",
+    "allowed": "$400,000.00"
+   },
+   "expect": "seller keeps the upfront; buyer gets the holdback; shortfall recorded"
+  },
+  {
+   "key": "disallowed",
+   "title": "Disallowed after the transfer",
+   "claim_number": "1129",
+   "seller_name": "Tamsford Cold Storage Inc.",
+   "filed": "2026-09-23",
+   "face_amount": 600000,
+   "claim_amount_text": "$600,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 4000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Disallowed by court order"
+   },
+   "expect": "seller keeps the upfront; buyer gets the holdback"
+  },
+  {
+   "key": "withdrawn",
+   "title": "Withdrawn after the transfer",
+   "claim_number": "1156",
+   "seller_name": "Kindrell Tire Service LLC",
+   "filed": "2026-09-25",
+   "face_amount": 500000,
+   "claim_amount_text": "$500,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Withdrawn by claimant"
+   },
+   "expect": "seller gets everything: the buyer held the claim live, then it was withdrawn (the holder's act)"
+  },
+  {
+   "key": "no_transfer",
+   "title": "Never transferred",
+   "claim_number": "1188",
+   "seller_name": "Orvane Fuel Supply Inc.",
+   "filed": "2026-09-29",
+   "face_amount": 700000,
+   "claim_amount_text": "$700,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "transfer": false,
+   "expect": "buyer refunded at transfer_by"
+  },
+  {
+   "key": "unclear",
+   "title": "Unclear status until the long stop",
+   "claim_number": "1204",
+   "seller_name": "Gristmoor Signage LLC",
+   "filed": "2026-10-02",
+   "face_amount": 900000,
+   "claim_amount_text": "$900,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Allowed for voting purposes only",
+    "allowed": "$900,000.00"
+   },
+   "expect": "no decision; split by no_decision_seller_bp at allowance_by"
+  },
+  {
+   "key": "one_sided",
+   "title": "One-sided release and refund, then allowed in full",
+   "claim_number": "1231",
+   "seller_name": "Sallowby Uniform Rentals Inc.",
+   "filed": "2026-10-06",
+   "face_amount": 1000000,
+   "claim_amount_text": "$1,000,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Allowed",
+    "allowed": "$1,000,000.00"
+   },
+   "release_tenths": 1,
+   "refund_tenths": 1,
+   "expect": "the release counts against the final price; the refund stays with the buyer"
+  },
+  {
+   "key": "withdrawn_early",
+   "title": "Withdrawn before the buyer held it live",
+   "claim_number": "1257",
+   "seller_name": "Penhallow Valve Works Inc.",
+   "filed": "2026-10-09",
+   "face_amount": 400000,
+   "claim_amount_text": "$400,000.00",
+   "rate_bp": 5000,
+   "upfront_bp": 5000,
+   "no_decision_seller_bp": 7000,
+   "decision": {
+    "status": "Withdrawn by claimant"
+   },
+   "decision_from_flip": true,
+   "expect": "buyer refunded: the claim was withdrawn before the buyer was shown holding it live"
+  }
  ]
 }
