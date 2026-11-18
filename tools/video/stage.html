@@ -149,7 +149,7 @@ const SCENES = {
     const glow = `<div class="abs" style="left:${px(1010)};top:${px(170)};width:${px(780)};height:${px(780)};border-radius:50%;background:radial-gradient(circle, rgba(34,184,167,.26), rgba(138,108,224,.14) 45%, transparent 70%)"></div>`;
     const ros = `<div class="abs" style="left:${px(1020)};top:${px(180)};width:${px(760)};height:${px(760)};perspective:${px(1500)}"><div style="transform:rotateX(${tilt}deg) rotateZ(${t * 14}deg);transform-style:preserve-3d">${rosette(760, t, 0.05, 1.5)}</div></div>`;
     const text = `<div class="abs" style="left:${px(140)};top:${px(270)};width:${px(880)}"><div class="lede" style="${rise(t, .15, .6)}">ClaimEscrow, on GenLayer</div>
-      <div class="h" style="font-size:${px(82)};margin-top:${px(22)};${rise(t, .35, 1.0, 34)}">Buy a bankruptcy claim with the price in escrow.</div>
+      <div class="h" style="font-size:${px(82)};margin-top:${px(22)};${rise(t, .35, 1.0, 34)}">The safer way to buy and sell bankruptcy claims.</div>
       <div style="font-size:${px(30)};color:${C.amber};font-weight:600;margin-top:${px(30)};${rise(t, .8, 1.3)}">claims.brilliantnodes.com</div>
       <div class="muted" style="font-size:${px(22)};margin-top:${px(14)};${op(t, 1.0, 1.4)}">Fictional case and names · test GEN only</div></div>`;
     return waves(t) + glow + ros + text;

@@ -27,7 +27,7 @@ WORDS = {8: "Eight", 9: "Nine", 10: "Ten"}
 def lines(d):
     n = len(d["cases"])
     return {
-        "title": "Claim Escrow. Buy a bankruptcy claim, with the whole price in escrow until the register decides.",
+        "title": "Claim Escrow. The safer way to buy and sell bankruptcy claims: the whole price waits in escrow until the claims register decides.",
         "problem": "When a company goes bankrupt, its suppliers can sell their claims for cash now. But what a claim is worth is decided later, so today one side has to trust the other.",
         "register": "The facts that decide the money are public, on the claims register: who holds the claim, its status, and its allowed amount.",
         "validators": "Gen Layer validators each read the claim's entry and copy those lines. Plain code checks every copy against its own page, and the money moves only when they agree exactly.",
