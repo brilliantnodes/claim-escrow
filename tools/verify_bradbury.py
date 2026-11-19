@@ -3,19 +3,22 @@
 transaction has finalized, and write the result next to it as
 <record>-check.json. The Studio twin is tools/verify.py.
 
-    BRADBURY_KEY_FILE=/home/claude/keys/bradbury_rr.key \\
-        python tools/verify_bradbury.py examples/live-bradbury-b1.json
+    (cd tools/bradbury && npm install)
+    python tools/verify_bradbury.py examples/live-bradbury-b1-merged.json
 
-The key file is only used to open a client for reads (nothing is sent, the key
-is never printed). For every recorded transaction it re-reads the transaction
+It only reads. Without BRADBURY_KEY_FILE it makes a throwaway key in a
+temporary file just to open the client, sends nothing and deletes the file. For every recorded transaction it re-reads the transaction
 from Bradbury and compares its result and execution with the record, and
 requires FINALIZED. Then it reads the contract's views and balance again: the
 balance must equal locked + credited.
 """
+import atexit
 import json
 import os
+import secrets
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,7 +36,11 @@ def node(*a, timeout=300):
 
 def main():
     if not os.environ.get("BRADBURY_KEY_FILE"):
-        sys.exit("set BRADBURY_KEY_FILE (used for reads only)")
+        fd, tmp = tempfile.mkstemp(suffix=".key")  # mode 0600; read-only use
+        os.write(fd, secrets.token_hex(32).encode())
+        os.close(fd)
+        os.environ["BRADBURY_KEY_FILE"] = tmp
+        atexit.register(os.remove, tmp)
     path = Path(sys.argv[1])
     rec = json.loads(path.read_text())
     rows, ok = [], True
