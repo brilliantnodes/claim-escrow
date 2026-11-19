@@ -21,6 +21,13 @@ minutes after it was sent, so the script reads well away from those moments:
   E + 95          settle: no decision by allowance_by (E + 65) + 30 min
   then            withdrawals; totals reconciled with the contract's balance
 
+On Bradbury (--net bradbury) the readings share two wallets and queue, so the
+times widen (SCHED below; pages from make_register.py <tag> <E> docs --bradbury):
+readings at E + 5, 17, 52 and 63, the decision shown from E + 50,
+transfer_by E + 40, allowance_by E + 85, settles at E + 70 and E + 115.
+A second reading waits confirm_seconds + 30 s after the moment the first one
+actually left its wallet, not after it was queued.
+
 Studio: throwaway accounts funded from Studio's faucet. Bradbury: two test
 wallets whose key files are in BRADBURY_KEY_DIR (never printed). Every name,
 case and figure is fictional; only test GEN moves.
@@ -55,7 +62,14 @@ def opt(name, default=""):
 NET = opt("--net", "studio")
 BB = NET == "bradbury"
 UPG = CASES["units_per_gen"][NET]
-TRANSFER_BY, ALLOWANCE_BY = E + 30 * 60, E + 65 * 60
+# Minutes after E. Studio gives every case its own reader account, so the nine
+# readings of a round go out together. Bradbury runs on two funded wallets, so
+# a round's nine readings queue behind each other (about a minute each), and
+# the decision moves to E + 50 to keep 24 minutes between the end of the
+# second round and the next change of the register (make_register.py --bradbury).
+SCHED = {"studio": {"r1": 5, "r2": 16, "r3": 42, "r4": 53, "transfer_by": 30, "allowance_by": 65},
+         "bradbury": {"r1": 5, "r2": 17, "r3": 52, "r4": 63, "transfer_by": 40, "allowance_by": 85}}[NET]
+TRANSFER_BY, ALLOWANCE_BY = E + SCHED["transfer_by"] * 60, E + SCHED["allowance_by"] * 60
 REC_PATH = ROOT / "examples" / f"live-{NET}-{TAG}.json"
 REC = {"net": NET, "tag": TAG, "accept_by": E, "transfer_by": TRANSFER_BY, "allowance_by": ALLOWANCE_BY, "site": SITE,
        "contract": {}, "accounts": {}, "deals": {}, "steps": []}
@@ -79,6 +93,26 @@ def save():
 def until(ts):
     while time.time() < ts:
         time.sleep(min(5, max(0.5, ts - time.time())))
+
+
+class FifoLock:
+    """A lock that serves waiting threads in arrival order, so the readings of
+    a round leave a shared wallet in case order."""
+
+    def __init__(self):
+        self.c, self.q = threading.Condition(), []
+
+    def __enter__(self):
+        me = object()
+        with self.c:
+            self.q.append(me)
+            while self.q[0] is not me:
+                self.c.wait()
+
+    def __exit__(self, *exc):
+        with self.c:
+            self.q.pop(0)
+            self.c.notify_all()
 
 
 # ------------------------------------------------------------------ backends
@@ -151,8 +185,9 @@ if not BB:
         """One send only: a retry after the node got it would be a second transaction."""
         c, a = ACCTS[role]
         with ROLE_LOCKS[role]:
+            sent_at = time.time()
             tx = c.write_contract(address=addr, function_name=fn, args=fargs, value=value)
-        return tx, _result(_wait(c, tx))
+        return tx, {**_result(_wait(c, tx)), "sent_at": sent_at}
 
     def view(addr, fn, fargs):
         c, a = ACCTS["reader0"]
@@ -171,7 +206,7 @@ else:
     JS = ROOT / "tools" / "bradbury"
     KEY_DIR = os.environ.get("BRADBURY_KEY_DIR", "/home/claude/keys")
     KEYS = {"seller": f"{KEY_DIR}/bradbury_rr2.key", "buyer": f"{KEY_DIR}/bradbury_rr.key"}
-    ROLE_LOCKS = {r: threading.Lock() for r in KEYS}
+    ROLE_LOCKS = {r: FifoLock() for r in KEYS}
     NOTHING = ("UNDETERMINED", "LEADER_TIMEOUT", "VALIDATORS_TIMEOUT", "CANCELED")
 
     def _node(role, *a, timeout=1800):
@@ -183,7 +218,7 @@ else:
         from eth_account import Account
         for role in KEYS:
             REC["accounts"][role] = Account.from_key(Path(KEYS[role]).read_text().strip()).address
-        for i in range(8):
+        for i in range(len(CASES["cases"])):  # one reader name per case (nine), on the two wallets
             REC["accounts"][f"reader{i}"] = REC["accounts"]["seller" if i % 2 else "buyer"]
 
     def _role(role):
@@ -214,6 +249,7 @@ else:
     def send(role, addr, fn, fargs, value=0, payees=""):
         r = _role(role)
         with ROLE_LOCKS[r]:
+            sent_at = time.time()  # the moment it leaves, after any wait for the wallet
             o = _node(r, "write", addr, fn, json.dumps(fargs), str(value), payees)
         sent = next((x["sent"] for x in o if "sent" in x), None)
         d = next((x for x in reversed(o) if "ok" in x), {})
@@ -225,7 +261,7 @@ else:
             raw = _wait_h(h, final=True)
         st = str(raw.get("statusName", ""))
         return h, {"status": st if st in NOTHING else raw.get("resultName"), "execution": raw.get("txExecutionResultName"),
-                   "created": raw.get("createdTimestamp"), "result": None}
+                   "created": raw.get("createdTimestamp"), "result": None, "sent_at": sent_at}
 
     def view(addr, fn, fargs):
         d = {}
@@ -279,17 +315,18 @@ def run_case(i, case, addr, did):
         until(E + 60 + i * 5)
         step(key, "buyer", addr, "release", [did, price * case["release_tenths"] // 10], expect="buyer releases part of the escrow to the seller")
         step(key, "seller", addr, "refund", [did, price * case["refund_tenths"] // 10], expect="seller refunds part of the escrow to the buyer")
+    S = SCHED
     if case.get("transfer", True):
-        until(E + 5 * 60 + i * 8)
+        until(E + S["r1"] * 60 + i * 8)
         t1 = time.time()
-        step(key, reader, addr, "read_register", [did], expect="transfer seen")
-        until(max(E + 16 * 60 + i * 8, t1 + C + 30))
+        t1 = step(key, reader, addr, "read_register", [did], expect="transfer seen")[1].get("sent_at", t1)
+        until(max(E + S["r2"] * 60 + i * 8, t1 + C + 30))
         t2 = time.time()
-        step(key, reader, addr, "read_register", [did], expect="transfer confirmed: upfront released")
-        until(max(E + 42 * 60 + i * 8, t2 + 60))
+        t2 = step(key, reader, addr, "read_register", [did], expect="transfer confirmed: upfront released")[1].get("sent_at", t2)
+        until(max(E + S["r3"] * 60 + i * 8, t2 + 60))
         t3 = time.time()
-        step(key, reader, addr, "read_register", [did], expect="decision seen")
-        until(max(E + 53 * 60 + i * 8, t3 + C + 30))
+        t3 = step(key, reader, addr, "read_register", [did], expect="decision seen")[1].get("sent_at", t3)
+        until(max(E + S["r4"] * 60 + i * 8, t3 + C + 30))
         if key != "unclear":
             step(key, reader, addr, "read_register", [did], expect=case["expect"])
         else:
@@ -297,7 +334,7 @@ def run_case(i, case, addr, did):
             until(ALLOWANCE_BY + 1800 + 30)
             step(key, reader, addr, "settle", [did], expect=case["expect"])
     else:
-        until(E + 5 * 60 + i * 8)
+        until(E + S["r1"] * 60 + i * 8)
         step(key, reader, addr, "read_register", [did], expect="the seller still holds the claim")
         until(TRANSFER_BY + 1800 + 30)
         step(key, reader, addr, "settle", [did], expect=case["expect"])
@@ -308,12 +345,13 @@ def main():
     save()
     addr = opt("--contract")
     if not addr:
-        path = ROOT / ("bradbury/build/claim_escrow.py" if BB else "contracts/claim_escrow.py")
+        # Bradbury: the packed build (port.py --pack); the stripped build alone is over the deploy gas cap
+        path = ROOT / ("bradbury/build/claim_escrow_packed.py" if BB else "contracts/claim_escrow.py")
         tx, addr = deploy("seller", path, [json.dumps([HOST]), C])
         REC["contract"] = {"address": addr, "deploy_tx": tx}
         log(f"ClaimEscrow deployed at {addr} ({tx})")
     else:
-        REC["contract"] = {"address": addr}
+        REC["contract"] = {"address": addr, **({"deploy_tx": opt("--deploy-tx")} if opt("--deploy-tx") else {})}
     save()
     acc = REC["accounts"]
     step("refused offer", "seller", addr, "offer", [acc["buyer"], CASES["buyer_name"], "Quenby Tool & Die LLC", CASES["debtor_name"], "1042",

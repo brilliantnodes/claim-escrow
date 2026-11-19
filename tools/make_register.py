@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write the fictional claims agent's register pages for one live run.
 
-    python tools/make_register.py <tag> <E_unix> <out_dir>
+    python tools/make_register.py <tag> <E_unix> <out_dir> [--bradbury]
 
 E is the offers' accept_by time. Each page is one claim's entry in the
 register of the fictional Pellmoor Freight Lines, Inc. case, kept by the
@@ -13,6 +13,7 @@ at different moments see the register change the way a real one does:
   from  E + 3 min    the buyer is shown as holder ("... as transferee of ...")
   from  E + 40 min   the court's decision (allowed, disallowed, withdrawn...),
                      after the reading that confirms the transfer
+                     (E + 50 min with --bradbury, where readings queue on two wallets)
   (case withdrawn_early: the withdrawal shows from E + 3 min, with the transfer)
 
 The live script reads well away from those change times. Pages go to
@@ -94,7 +95,12 @@ def schedule(case, e):
 
 
 def main():
+    global DECIDE
     tag, e, out = sys.argv[1], int(sys.argv[2]), Path(sys.argv[3])
+    if "--bradbury" in sys.argv[4:]:
+        # Bradbury's readings queue on two wallets; the second round ends near E + 26,
+        # so the decision shows from E + 50 (24 minutes later). See tools/live.py SCHED.
+        DECIDE = 50 * 60
     n = 0
     for case in CASES["cases"]:
         claim = {"number": case["claim_number"]}
