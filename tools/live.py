@@ -2,7 +2,7 @@
 """Run the nine fictional ClaimEscrow cases live on GenLayer Studio or Testnet
 Bradbury Phase 2, side by side, and record every transaction.
 
-    python tools/live.py <tag> <E_unix> [--net studio|bradbury] [--contract 0x..]
+    python tools/live.py <tag> <E_unix> [--net studio|bradbury] [--contract 0x.. [--deploy-tx 0x..]]
 
 E is every offer's accept_by. The register pages must already be live at
 https://claims.brilliantnodes.com/register/<tag>/claim-<number>.html
@@ -254,6 +254,8 @@ else:
         sent = next((x["sent"] for x in o if "sent" in x), None)
         d = next((x for x in reversed(o) if "ok" in x), {})
         h = d.get("hash") or sent
+        if not h:  # nothing left the wallet: raise, so step() records SEND_FAILED and retries a reading
+            raise RuntimeError(str(d.get("error") or "gl.mjs gave no transaction hash")[:300])
         raw = d.get("raw") or {}
         if h and not _decided(raw):
             raw = _wait_h(h)

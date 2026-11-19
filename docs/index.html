@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ClaimEscrow: bankruptcy-claim purchases settled from the public register, on GenLayer</title>
-<meta name="description" content="Escrow for the purchase of a bankruptcy claim. GenLayer validators read the claim's entry in the public claims register; code moves the money. Fictional demo, test GEN only.">
+<title>ClaimEscrow: a safe way to buy and sell bankruptcy claims, on GenLayer</title>
+<meta name="description" content="A safe way to buy and sell bankruptcy claims: the buyer's money waits in escrow on GenLayer, and the seller is paid only when the public list of the company's debts shows the sale went through. Fictional demo, test GEN only.">
 <style>
 :root{--ink:#17202c;--mute:#5b6676;--line:#dde3eb;--bg:#f6f8fb;--card:#fff;--acc:#1f5fbf;--ok:#1b7f4b;--bad:#b3261e;--warn:#9a6700}
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
@@ -23,7 +23,8 @@ footer{max-width:980px;margin:auto;padding:0 20px 40px;color:var(--mute);font-si
 <body>
 <header><div class="w">
 <h1>ClaimEscrow</h1>
-<p><b>Escrow for the purchase of a bankruptcy claim, settled on GenLayer from the claim's entry in the public claims register.</b></p>
+<p><b>A safe way to buy and sell bankruptcy claims.</b></p>
+<p>When a company goes bust, the people it owes money to can sell their right to be paid (a "claim") for cash today. ClaimEscrow holds the buyer's money and pays the seller only when the official public list of the company's debts (the claims register) shows the sale went through and how much the claim is worth. Bankruptcy claims are one part of litigation funding, a market of about $25bn in 2025 (<a href="https://www.custommarketinsights.com/report/litigation-funding-investment-market/">Custom Market Insights</a>).</p>
 <p>The whole price sits in escrow. Validators read who holds the claim, its status and its allowed amount on the register page; plain code decides every amount. Nothing moves on one look: a state counts once it is seen twice, a set time apart.</p>
 <span class="pill">Fictional case and names</span><span class="pill">Test GEN only</span><span class="pill">Not legal advice</span>
 <p class="small">Live on GenLayer Studio (run s8: nine fictional deals, 67 transactions, all finalized) and on Testnet Bradbury (run b1: the same nine deals, 70 transactions, all finalized). Pick a run below.</p>
@@ -47,6 +48,7 @@ footer{max-width:980px;margin:auto;padding:0 20px 40px;color:var(--mute);font-si
 <p>Run: <select id="run"></select> <span class="small" id="runinfo"></span></p>
 <div id="deals" class="grid"></div>
 <h3 style="margin-top:26px">Every transaction</h3>
+<p class="small" id="bbnote" style="display:none">Bradbury returns no result per call: "expected" is what the script aimed for; what each reading saw is in the deal's log above. In deal 1 (full), the reading logged 07:15:00 read nothing (N1_WRONG_PAGE), the one logged 07:26:53 first saw the transfer, and the one logged 07:38:32 (sent by hand) confirmed it.</p>
 <div class="card" style="overflow-x:auto"><table id="steps"><thead><tr><th>Logged (UTC)</th><th>Case</th><th>Call</th><th>Outcome</th><th>Tx</th></tr></thead><tbody></tbody></table></div>
 
 <h2>Check it yourself</h2>
@@ -64,6 +66,7 @@ function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function 
 function load(i) {
   fetch(RUNS[i].file).then(function (r) { return r.json(); }).then(function (rec) {
     var ex = EXPL[rec.net];
+    document.getElementById("bbnote").style.display = RUNS[i].file.indexOf("live-bradbury-b1") >= 0 ? "" : "none";
     document.getElementById("runinfo").innerHTML = 'contract <a class="mono" href="' + ex + "/address/" + rec.contract.address + '">' + esc(rec.contract.address) + "</a>";
     var box = document.getElementById("deals"); box.innerHTML = "";
     var fin = (rec.final || {}).deals || {};
