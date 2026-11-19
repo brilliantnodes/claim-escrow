@@ -1,0 +1,2715 @@
+{
+ "net": "bradbury",
+ "tag": "b1",
+ "accept_by": 1795072140,
+ "transfer_by": 1795074540,
+ "allowance_by": 1795077240,
+ "site": "https://claims.brilliantnodes.com",
+ "contract": {
+  "address": "0xdE2e969ecFE0229849ad95CF3Df8aC803F079131",
+  "deploy_tx": "0x5802d925c5a9706501365ab41090a3645d2ab370fd5d9c1a799f401fd8a34c9a"
+ },
+ "accounts": {
+  "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+  "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+  "reader0": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+  "reader1": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+  "reader2": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+  "reader3": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+  "reader4": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+  "reader5": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+  "reader6": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+  "reader7": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+  "reader8": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4"
+ },
+ "deals": {
+  "full": {
+   "id": "1",
+   "digest": "a40829ee92813bf4bde586de60ce5347a0e7ae65c748951c653e42eb5b161c3f",
+   "price": "75000000000000000",
+   "upfront": "37500000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1042.html",
+   "title": "Allowed in full"
+  },
+  "eighty": {
+   "id": "2",
+   "digest": "6c4009e30d35e9ff813caa1f63184ac744bebe0feb821aca6c67a5e835b84c60",
+   "price": "55000000000000000",
+   "upfront": "27500000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1077.html",
+   "title": "Allowed at 80%"
+  },
+  "shortfall": {
+   "id": "3",
+   "digest": "a55b797f9865f0f946d39321bb31d2c393df98d692171945eb23b287a8c15ef1",
+   "price": "48000000000000000",
+   "upfront": "28800000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1103.html",
+   "title": "Allowed at 50% with a 60% upfront"
+  },
+  "disallowed": {
+   "id": "4",
+   "digest": "2779a0a557050937c9fdccfe7d5acc1f9aa50759bf7b31783cf7ac62ec9734b9",
+   "price": "30000000000000000",
+   "upfront": "12000000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1129.html",
+   "title": "Disallowed after the transfer"
+  },
+  "withdrawn": {
+   "id": "5",
+   "digest": "9d33d8131719bac71bf99d1dbac5aad82126842b5abf666652e7e2941f2d06c5",
+   "price": "25000000000000000",
+   "upfront": "12500000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1156.html",
+   "title": "Withdrawn after the transfer"
+  },
+  "no_transfer": {
+   "id": "6",
+   "digest": "9ab5ad7e92152dc9f7eaab06158f4315a76f9e0c5fffbd9f713ec4c699c2839c",
+   "price": "35000000000000000",
+   "upfront": "17500000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1188.html",
+   "title": "Never transferred"
+  },
+  "unclear": {
+   "id": "7",
+   "digest": "47cdd3eff0cf847ff8cd758976890b59345826fa4ad010cd2e0ff36f2a3f9496",
+   "price": "45000000000000000",
+   "upfront": "22500000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1204.html",
+   "title": "Unclear status until the long stop"
+  },
+  "one_sided": {
+   "id": "8",
+   "digest": "975251bf71f29a129f8262825619b13a3e2eab6487a274a87e89c5b756439f21",
+   "price": "50000000000000000",
+   "upfront": "25000000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1231.html",
+   "title": "One-sided release and refund, then allowed in full"
+  },
+  "withdrawn_early": {
+   "id": "9",
+   "digest": "61d8744a636d6e51cc834283a0ccc6561f1c532c3530a94f9ddc27b8e12a7e96",
+   "price": "20000000000000000",
+   "upfront": "10000000000000000",
+   "url": "https://claims.brilliantnodes.com/register/b1/claim-1257.html",
+   "title": "Withdrawn before the buyer held it live"
+  }
+ },
+ "steps": [
+  {
+   "case": "refused offer",
+   "at": "2026-11-19 06:26:08",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Quenby Tool & Die LLC",
+    "Pellmoor Freight Lines, Inc.",
+    "1042",
+    "https://register.example.com/claim-1042.html",
+    "USD",
+    1000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x85b2b58027f5eaea70c2ac249c14432888907be0814e93470c222d58aa5d0866",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_ERROR",
+   "created": "1795069537",
+   "result": null,
+   "sent_at": 1795069534.5871007,
+   "expect": "error: host not on the frozen list"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 06:26:48",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Quenby Tool & Die LLC",
+    "Pellmoor Freight Lines, Inc.",
+    "1042",
+    "https://claims.brilliantnodes.com/register/b1/claim-1042.html",
+    "USD",
+    1250000,
+    6000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x0a10cb9edf8e8290dfe3e85cbff91341c1dcc105de36ec0ea62437b3b038dd9b",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069570",
+   "result": null,
+   "sent_at": 1795069568.1394334,
+   "expect": "offer stored"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 06:27:31",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Brasswick Conveyor Parts LLC",
+    "Pellmoor Freight Lines, Inc.",
+    "1077",
+    "https://claims.brilliantnodes.com/register/b1/claim-1077.html",
+    "USD",
+    1000000,
+    5500,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x45ecb696ef506ffc53ff499f98425bb0af5603bc065cc490b3ec47f9c7ba6f21",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069621",
+   "result": null,
+   "sent_at": 1795069618.764452,
+   "expect": "offer stored"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 06:28:14",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Velloran Packaging Co.",
+    "Pellmoor Freight Lines, Inc.",
+    "1103",
+    "https://claims.brilliantnodes.com/register/b1/claim-1103.html",
+    "USD",
+    800000,
+    6000,
+    10000000,
+    6000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x4bd0a947d706796ade9b2e4fea4ea4974df1d9144d03d36175ae16df7963fd13",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069664",
+   "result": null,
+   "sent_at": 1795069661.8831604,
+   "expect": "offer stored"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 06:28:57",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Tamsford Cold Storage Inc.",
+    "Pellmoor Freight Lines, Inc.",
+    "1129",
+    "https://claims.brilliantnodes.com/register/b1/claim-1129.html",
+    "USD",
+    600000,
+    5000,
+    10000000,
+    4000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x6121385574a1c476ab7c62d610805f4c3d22fa9b891869d0d62cbe34226519f4",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069707",
+   "result": null,
+   "sent_at": 1795069704.532407,
+   "expect": "offer stored"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 06:29:48",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Kindrell Tire Service LLC",
+    "Pellmoor Freight Lines, Inc.",
+    "1156",
+    "https://claims.brilliantnodes.com/register/b1/claim-1156.html",
+    "USD",
+    500000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x7d92ecf6a1a8498690f1ce4c9fdd3bddb1f18544c285beda319fed76653d7a2d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069751",
+   "result": null,
+   "sent_at": 1795069748.5004315,
+   "expect": "offer stored"
+  },
+  {
+   "case": "no_transfer",
+   "at": "2026-11-19 06:30:37",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Orvane Fuel Supply Inc.",
+    "Pellmoor Freight Lines, Inc.",
+    "1188",
+    "https://claims.brilliantnodes.com/register/b1/claim-1188.html",
+    "USD",
+    700000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0xc4d8e0f72c1104e47f9ac698a603ffc7b19a104c9d9f4b27b6375084a9e30dc7",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069800",
+   "result": null,
+   "sent_at": 1795069797.7861142,
+   "expect": "offer stored"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 06:31:14",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Gristmoor Signage LLC",
+    "Pellmoor Freight Lines, Inc.",
+    "1204",
+    "https://claims.brilliantnodes.com/register/b1/claim-1204.html",
+    "USD",
+    900000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x2a783750246111182b60c2e17dad13a2a9c2d31ca0c0bca357efece25200ed64",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069850",
+   "result": null,
+   "sent_at": 1795069848.180249,
+   "expect": "offer stored"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 06:32:04",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Sallowby Uniform Rentals Inc.",
+    "Pellmoor Freight Lines, Inc.",
+    "1231",
+    "https://claims.brilliantnodes.com/register/b1/claim-1231.html",
+    "USD",
+    1000000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0xb7a445994f5cec0b84e54c4a5c96598f056c966b96af78f88011d14b3731a477",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069887",
+   "result": null,
+   "sent_at": 1795069885.110525,
+   "expect": "offer stored"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 06:32:47",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "offer",
+   "args": [
+    "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "Harrowfield Credit Partners LP",
+    "Penhallow Valve Works Inc.",
+    "Pellmoor Freight Lines, Inc.",
+    "1257",
+    "https://claims.brilliantnodes.com/register/b1/claim-1257.html",
+    "USD",
+    400000,
+    5000,
+    10000000,
+    5000,
+    600,
+    1795072140,
+    1795074540,
+    1795077240,
+    7000
+   ],
+   "value": "0",
+   "tx": "0x7174c49b38ca20dd74fdf40774a34fc78f88a87967145004ae4f693ec373ce7e",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069937",
+   "result": null,
+   "sent_at": 1795069934.9051635,
+   "expect": "offer stored"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 06:35:01",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x47831b65fcaafafc40182b600ea9203b2bed1eb17b14908a3bd3c90dcd6b6342",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795069981",
+   "result": null,
+   "sent_at": 1795069978.3052676,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 06:35:34",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "1",
+    "a40829ee92813bf4bde586de60ce5347a0e7ae65c748951c653e42eb5b161c3f"
+   ],
+   "value": "74999999999999999",
+   "tx": "0xb882ac7205cf0e23c8d055576051631808931ce823af4704532995f84c47d8b6",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070104",
+   "result": null,
+   "sent_at": 1795070101.7866051,
+   "expect": "refused: not exactly the price (credited back)"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 06:36:07",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "1",
+    "a40829ee92813bf4bde586de60ce5347a0e7ae65c748951c653e42eb5b161c3f"
+   ],
+   "value": "75000000000000000",
+   "tx": "0x4d30b40b999a3271b304473df8c87110445e47a011b2b27742fd8b64d35efb35",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070137",
+   "result": null,
+   "sent_at": 1795070134.6949718,
+   "expect": "accepted"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 06:37:07",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "2"
+   ],
+   "value": "0",
+   "tx": "0x0982e3eb0fc5352b0d5730109ed1ffb9b0c0c02656eb426b647f60e5529b3306",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070170",
+   "result": null,
+   "sent_at": 1795070167.6071966,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 06:37:33",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "2",
+    "6c4009e30d35e9ff813caa1f63184ac744bebe0feb821aca6c67a5e835b84c60"
+   ],
+   "value": "55000000000000000",
+   "tx": "0x29cf2386c0ca60c4c3f19bb738e9ad0d5bb6d44e0640be679e42976e773eea08",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070230",
+   "result": null,
+   "sent_at": 1795070227.4844015,
+   "expect": "accepted"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 06:38:26",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "3"
+   ],
+   "value": "0",
+   "tx": "0x7df32a24fbec2cb540cd908841dc5a9ce02a086c20e0fc6ea39053d34ae8cca8",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070256",
+   "result": null,
+   "sent_at": 1795070253.6517243,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 06:38:59",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "3",
+    "a55b797f9865f0f946d39321bb31d2c393df98d692171945eb23b287a8c15ef1"
+   ],
+   "value": "48000000000000000",
+   "tx": "0x65b79e3676d7ea8940d07ae7e4c7aff4d64dab4b3f99139f01ff72461577e43d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070309",
+   "result": null,
+   "sent_at": 1795070306.617156,
+   "expect": "accepted"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 06:39:45",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "4"
+   ],
+   "value": "0",
+   "tx": "0xd651ea9add05c9cffa8acfdbd1bbe31d4558609a06d2976e8d9e4d84fd56385b",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070342",
+   "result": null,
+   "sent_at": 1795070339.738644,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 06:40:19",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "4",
+    "2779a0a557050937c9fdccfe7d5acc1f9aa50759bf7b31783cf7ac62ec9734b9"
+   ],
+   "value": "30000000000000000",
+   "tx": "0x40c94a8b9d8f4c6391745722e1d2fc8ba82bf1dc1bb6055bd6b513424bd0fa4d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070388",
+   "result": null,
+   "sent_at": 1795070385.9874647,
+   "expect": "accepted"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 06:41:18",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "5"
+   ],
+   "value": "0",
+   "tx": "0xfe944d01f9e4972e96e2733f97bb0f6668d63e578ff130f250c3b8e86b8b9eae",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070421",
+   "result": null,
+   "sent_at": 1795070419.1738935,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 06:41:51",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "5",
+    "9d33d8131719bac71bf99d1dbac5aad82126842b5abf666652e7e2941f2d06c5"
+   ],
+   "value": "25000000000000000",
+   "tx": "0xd53d8fafa18a7c77955d9504187292061d83b7ce0233b75c80b89edba11b5c9d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070481",
+   "result": null,
+   "sent_at": 1795070478.6217163,
+   "expect": "accepted"
+  },
+  {
+   "case": "no_transfer",
+   "at": "2026-11-19 06:42:44",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "6"
+   ],
+   "value": "0",
+   "tx": "0xe6eacabace6bfa0cc79dc53542c0b4241defda46fa1a625adf2b6aa3b2ac5256",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070514",
+   "result": null,
+   "sent_at": 1795070511.551469,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "no_transfer",
+   "at": "2026-11-19 06:43:17",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "6",
+    "9ab5ad7e92152dc9f7eaab06158f4315a76f9e0c5fffbd9f713ec4c699c2839c"
+   ],
+   "value": "35000000000000000",
+   "tx": "0x3e242f735b3a77faed734e41d4cf5fceb242884185ae80da39370ac675aae700",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070566",
+   "result": null,
+   "sent_at": 1795070564.1394913,
+   "expect": "accepted"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 06:44:23",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0x26fcb70e2047f48fb7db93b683e0d0c2474d61a97cda11fb3e566c5a3d758e7d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070599",
+   "result": null,
+   "sent_at": 1795070597.1892693,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 06:44:55",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "7",
+    "47cdd3eff0cf847ff8cd758976890b59345826fa4ad010cd2e0ff36f2a3f9496"
+   ],
+   "value": "45000000000000000",
+   "tx": "0x7eb0c9dca60b161508883b962c927beecbbbae16c48762f0149df4784d64724d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070665",
+   "result": null,
+   "sent_at": 1795070663.111983,
+   "expect": "accepted"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 06:46:09",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "8"
+   ],
+   "value": "0",
+   "tx": "0x1ccceccd6865078ef41c4d8513068475b0a3adbf8a0e8b829af87d1cbc06630e",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070698",
+   "result": null,
+   "sent_at": 1795070695.8887172,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 06:46:42",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "8",
+    "975251bf71f29a129f8262825619b13a3e2eab6487a274a87e89c5b756439f21"
+   ],
+   "value": "50000000000000000",
+   "tx": "0x5ad0dfed0930b1ac85ae7e55012bf6b313cc6c0417f3b922531f4880e5c2c48c",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070772",
+   "result": null,
+   "sent_at": 1795070769.7674096,
+   "expect": "accepted"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 06:47:35",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "9"
+   ],
+   "value": "0",
+   "tx": "0x270551953eb312b055df7e0245d9cf9341f70d66d46fb1622bd199b38235bb61",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070805",
+   "result": null,
+   "sent_at": 1795070802.7767563,
+   "expect": "baseline: the seller holds the claim, Pending"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 06:48:08",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "accept",
+   "args": [
+    "9",
+    "61d8744a636d6e51cc834283a0ccc6561f1c532c3530a94f9ddc27b8e12a7e96"
+   ],
+   "value": "20000000000000000",
+   "tx": "0x711857ccac3318584fd14fc4868b89631049df0efe671df19fa0d941e4d5d2a4",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795070857",
+   "result": null,
+   "sent_at": 1795070855.1742213,
+   "expect": "accepted"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 07:11:10",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "release",
+   "args": [
+    "8",
+    5000000000000000
+   ],
+   "value": "0",
+   "tx": "0xe94c01b0f39c8f81095b39cd91225dbf454772f0c78796496d48d06388afa46a",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072238",
+   "result": null,
+   "sent_at": 1795072235.0009573,
+   "expect": "buyer releases part of the escrow to the seller"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 07:11:43",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "refund",
+   "args": [
+    "8",
+    5000000000000000
+   ],
+   "value": "0",
+   "tx": "0xfe3f134205020e7d5e973d74752e241b21d69549e7057f73562cdd54e2040083",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072273",
+   "result": null,
+   "sent_at": 1795072270.6342764,
+   "expect": "seller refunds part of the escrow to the buyer"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 07:15:00",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x7c9e2e5b94ff3dfc6d68dc62d360afacd0e17eef3bbd8fd128824c84834da358",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072443",
+   "result": null,
+   "sent_at": 1795072440.0010014,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 07:15:47",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "2"
+   ],
+   "value": "0",
+   "tx": "0x2669ee1e41d6af7a9188fe29f4c4e41197ae5661bab2c9132ba51303e63e505e",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072450",
+   "result": null,
+   "sent_at": 1795072448.0002835,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 07:16:37",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "3"
+   ],
+   "value": "0",
+   "tx": "0x1823b7fe5c0c6e033ac1897c081f8379942c5edaeb336828663dcdeb81ff971d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072501",
+   "result": null,
+   "sent_at": 1795072498.0731795,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 07:17:50",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "4"
+   ],
+   "value": "0",
+   "tx": "0xdfb90379d06bb20e87b478e62ee19da75ae0fdc5818a34ce247df7d2feea97b2",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072547",
+   "result": null,
+   "sent_at": 1795072544.9737446,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 07:18:54",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "5"
+   ],
+   "value": "0",
+   "tx": "0x06f6ee737ceb1069db5ba55533806f94aa5fe04f052cf692a783e25873299423",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072598",
+   "result": null,
+   "sent_at": 1795072595.617853,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "no_transfer",
+   "at": "2026-11-19 07:19:40",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "6"
+   ],
+   "value": "0",
+   "tx": "0xf262fcfdb657523a7163529337683f2fd93bc09823e72255b6b37f45a9f7ad92",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072611",
+   "result": null,
+   "sent_at": 1795072609.0254736,
+   "expect": "the seller still holds the claim"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 07:21:24",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0x1fa93149f2edfa3f6004c4cd9eb0efddc57b787093f14ec3015504e77dc6e771",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072735",
+   "result": null,
+   "sent_at": 1795072732.5776546,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 07:22:05",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "8"
+   ],
+   "value": "0",
+   "tx": "0xdb504be098285e43126d20d5e7605d36d2cb65ad5b0fdd9d43f127a750eedd74",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072781",
+   "result": null,
+   "sent_at": 1795072779.0323126,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 07:23:23",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "9"
+   ],
+   "value": "0",
+   "tx": "0xd503c56cf97fb77007d4248e2b93e04e724e4763e91c201312a769a9ba573587",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795072885",
+   "result": null,
+   "sent_at": 1795072882.6782968,
+   "expect": "transfer seen"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 07:26:53",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x9016331bdc2ce308e72cad07a61031540b38b8d99c7301b1d59c2f50a1e16c86",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073162",
+   "result": null,
+   "sent_at": 1795073160.0009816,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 07:28:00",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "2"
+   ],
+   "value": "0",
+   "tx": "0x241d2ecec1813008c72b0d853768098f12d266a70a2c9755a727b6b8151ad264",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073170",
+   "result": null,
+   "sent_at": 1795073168.000319,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 07:28:51",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "3"
+   ],
+   "value": "0",
+   "tx": "0xc0793cfe4e3138263b06ab7a2614ea8e9e946c65d76fc7c3a390612eff8fb63d",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073214",
+   "result": null,
+   "sent_at": 1795073211.8970675,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 07:29:31",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "4"
+   ],
+   "value": "0",
+   "tx": "0xd4711e775a6fac80963e064b606bb42c930591f81f5d6e6a957934a351ce78c6",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073281",
+   "result": null,
+   "sent_at": 1795073278.8027883,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 07:30:08",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "5"
+   ],
+   "value": "0",
+   "tx": "0xecfffc6e5f40d5c75ea95e558e516a3ead413b58b9f92c09af0b1055ad85d0d3",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073331",
+   "result": null,
+   "sent_at": 1795073329.3150153,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 07:32:15",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0x36ec173feaa6bbef5dfc1970ce0d689890187890685dbd8220647e76c070d8ae",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073409",
+   "result": null,
+   "sent_at": 1795073406.3258042,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 07:35:06",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "8"
+   ],
+   "value": "0",
+   "tx": "0xaa6f09a359a5f8b2b7f7236d2410540e6fd79614e6f6a26965de8b17d4175394",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073411",
+   "result": null,
+   "sent_at": 1795073409.0326755,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 07:35:45",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "9"
+   ],
+   "value": "0",
+   "tx": "0x8a27ba5f04947bbea2e0741bae6d3f4628181b8e32e92e11d5f6ebb7c2ffa0e6",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073515",
+   "result": null,
+   "sent_at": 1795073512.678585,
+   "expect": "transfer confirmed: upfront released"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 07:38:32",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x2199216cd95a92831a4dd71e872d695a5cffe0d217a96f2b23470278ae08c767",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073914",
+   "result": null,
+   "sent_at": 1795073912.1702552,
+   "expect": "extra reading, sent by hand: the first reading after the transfer (07:14 UTC) came back N1_WRONG_PAGE, so the transfer was first seen at the second; this one confirms it before transfer_by"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 08:01:47",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x88565e20cf67a59c6f65c7be3f8c0908aac6e9456e94203039fa3577beccc688",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075263",
+   "result": null,
+   "sent_at": 1795075260.0009534,
+   "expect": "decision seen"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 08:02:35",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "2"
+   ],
+   "value": "0",
+   "tx": "0xd03918c97d7c3a0cd2a8a2df3e1373bf25af4a2666689035ec73baec34c6bbf4",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075270",
+   "result": null,
+   "sent_at": 1795075268.0003748,
+   "expect": "decision seen"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 08:03:18",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "3"
+   ],
+   "value": "0",
+   "tx": "0xbafec27b301964c4b18042d804a3835c4468c65867d6c37b715701a97e6c51e4",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075308",
+   "result": null,
+   "sent_at": 1795075305.6172109,
+   "expect": "decision seen"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 08:04:06",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "4"
+   ],
+   "value": "0",
+   "tx": "0x56afdaf15865b4cae427d451e8104573a693ee1c7a16c445fe17598adbcf8ac8",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075355",
+   "result": null,
+   "sent_at": 1795075353.1893682,
+   "expect": "decision seen"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 08:05:56",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "8"
+   ],
+   "value": "0",
+   "tx": "0xd139b69bb2d0771217c6a079ff5f29225c8b75fa6bf5ddb4ceba4d054d607668",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075447",
+   "result": null,
+   "sent_at": 1795075444.4814193,
+   "expect": "decision seen"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 08:06:00",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "5"
+   ],
+   "value": "0",
+   "tx": "0x8f589d145deb30200830fcf4e76cbbf2e77d70c11c79002fbe9dab91fe336ec9",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075399",
+   "result": null,
+   "sent_at": 1795075396.7853765,
+   "expect": "decision seen"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 08:06:40",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0x2f9177f921e1897b5a61196d83163cddfc6015743656da075ac053fff2ac9ff4",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075464",
+   "result": null,
+   "sent_at": 1795075461.1709924,
+   "expect": "decision seen"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 08:07:37",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "9"
+   ],
+   "value": "0",
+   "tx": "0xf002f518a8008a9ad212a1a304736f1044460bc77f557c762be19eb62d97f8b3",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075600",
+   "result": null,
+   "sent_at": 1795075598.0240045,
+   "expect": "decision seen"
+  },
+  {
+   "case": "full",
+   "at": "2026-11-19 08:12:47",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x634f974e1516fd1d236a8e6ab78333eea4ce667395ceb007b3363dcd2b848688",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075923",
+   "result": null,
+   "sent_at": 1795075920.0004935,
+   "expect": "seller gets the whole price"
+  },
+  {
+   "case": "shortfall",
+   "at": "2026-11-19 08:14:50",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "3"
+   ],
+   "value": "0",
+   "tx": "0x8c80dbf2a6f4178ad561f286f09682e1546794261b1f19bc74db88beccabe652",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075967",
+   "result": null,
+   "sent_at": 1795075965.0334535,
+   "expect": "seller keeps the upfront; buyer gets the holdback; shortfall recorded"
+  },
+  {
+   "case": "eighty",
+   "at": "2026-11-19 08:14:58",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "2"
+   ],
+   "value": "0",
+   "tx": "0x3dc04a748921bfb155234dfe76a1cc09e0f6a6c5183f21f26708b306cbe6a79a",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795075930",
+   "result": null,
+   "sent_at": 1795075928.0003471,
+   "expect": "seller gets the price for $800,000; buyer the rest"
+  },
+  {
+   "case": "disallowed",
+   "at": "2026-11-19 08:15:30",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "4"
+   ],
+   "value": "0",
+   "tx": "0x2f23d814d0078f7079fa8b82270400a722fdc8fc34bafe42dfa083fdfd3437ac",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795076001",
+   "result": null,
+   "sent_at": 1795075998.839907,
+   "expect": "seller keeps the upfront; buyer gets the holdback"
+  },
+  {
+   "case": "withdrawn",
+   "at": "2026-11-19 08:16:01",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "5"
+   ],
+   "value": "0",
+   "tx": "0x30d9d390e26c9c4c4e3db1775566b62af8c5821343753de8fd7add76c85a26e5",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795076091",
+   "result": null,
+   "sent_at": 1795076088.6825552,
+   "expect": "seller gets everything: the buyer held the claim live, then it was withdrawn (the holder's act)"
+  },
+  {
+   "case": "one_sided",
+   "at": "2026-11-19 08:16:42",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "read_register",
+   "args": [
+    "8"
+   ],
+   "value": "0",
+   "tx": "0x0f55852c1e1e91c7bf4fdba2a0c849e099f79c6374c8bbe4ecb12095291f57a2",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795076131",
+   "result": null,
+   "sent_at": 1795076128.9147947,
+   "expect": "the release counts against the final price; the refund stays with the buyer"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 08:17:18",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0x98297092333beafef460660fac24fb9011073d4ff382c6b7058abf169471664c",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795076162",
+   "result": null,
+   "sent_at": 1795076159.3838756,
+   "expect": "status unclear: no decision"
+  },
+  {
+   "case": "withdrawn_early",
+   "at": "2026-11-19 08:17:49",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "9"
+   ],
+   "value": "0",
+   "tx": "0xd7237182f2b197547db61fa4beb0c2d69fa7bade28a87d1bb76e5cf121b96f86",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_ERROR",
+   "created": "1795076239",
+   "result": null,
+   "sent_at": 1795076236.668137,
+   "expect": "buyer refunded: the claim was withdrawn before the buyer was shown holding it live"
+  },
+  {
+   "case": "no_transfer",
+   "at": "2026-11-19 08:20:09",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "settle",
+   "args": [
+    "6"
+   ],
+   "value": "0",
+   "tx": "0x036b6c087334836d3089a9f5c1d3ae7a9f1728ef4c05f3630e59f3a623043c33",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795076372",
+   "result": null,
+   "sent_at": 1795076370.0003262,
+   "expect": "buyer refunded at transfer_by"
+  },
+  {
+   "case": "unclear",
+   "at": "2026-11-19 09:05:11",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "settle",
+   "args": [
+    "7"
+   ],
+   "value": "0",
+   "tx": "0xe2a0ade17d9438125aaefee3f055231d0f421882e6f37982098a7a5a75e81425",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795079073",
+   "result": null,
+   "sent_at": 1795079070.0008283,
+   "expect": "no decision; split by no_decision_seller_bp at allowance_by"
+  },
+  {
+   "case": "withdraw",
+   "at": "2026-11-19 09:05:44",
+   "from": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+   "fn": "withdraw",
+   "args": [
+    0
+   ],
+   "value": "0",
+   "tx": "0xd4a9e441fe01648de274b8751515a3091ac551896ad644506f4353168839d215",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795079113",
+   "result": null,
+   "sent_at": 1795079111.1436305
+  },
+  {
+   "case": "withdraw",
+   "at": "2026-11-19 09:06:17",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "withdraw",
+   "args": [
+    0
+   ],
+   "value": "0",
+   "tx": "0x6a945d46fe6badcb6e686b2cdba029f3a8377b8dee226896da76b79f92515c35",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795079147",
+   "result": null,
+   "sent_at": 1795079144.7637243
+  }
+ ],
+ "final": {
+  "totals": {
+   "credited": "0",
+   "deals": 9,
+   "locked": "0"
+  },
+  "balance": "457999999999999999",
+  "deals": {
+   "full": {
+    "accepted_at": 1795070137,
+    "baseline": {
+     "amount": 0,
+     "at": 1795069981,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795075923,
+    "created_at": 1795069570,
+    "decision": {
+     "confirmed": {
+      "amount": 1250000,
+      "status": "ALLOWED"
+     },
+     "confirmed_at": 1795075923,
+     "first_seen": {
+      "amount": 1250000,
+      "at": 1795075263,
+      "status": "ALLOWED"
+     }
+    },
+    "digest": "a40829ee92813bf4bde586de60ce5347a0e7ae65c748951c653e42eb5b161c3f",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "1",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069570,
+      "note": "price 75000000000000000 wei, upfront 37500000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795069981,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795069981,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070137,
+      "note": "75000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072443,
+      "note": "N1_WRONG_PAGE",
+      "what": "READING"
+     },
+     {
+      "at": 1795073162,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073162,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073914,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073914,
+      "note": "status PENDING; upfront released: 37500000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073914,
+      "note": "37500000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075263,
+      "note": "BUYER ALLOWED 1250000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075263,
+      "note": "ALLOWED 1250000; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795075923,
+      "note": "BUYER ALLOWED 1250000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075923,
+      "note": "ALLOWED 1250000",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795075923,
+      "note": "claim allowed at 1250000 USD",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795075923,
+      "note": "37500000000000000 wei to the seller (allowed at 1250000 USD: the price for that amount, less what was released); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "75000000000000000",
+     "final_due": "37500000000000000",
+     "left": "0",
+     "paid_at_decision": "37500000000000000",
+     "refunded": "0",
+     "released": "75000000000000000",
+     "shortfall": "0"
+    },
+    "price": "75000000000000000",
+    "readings": 6,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim allowed at 1250000 USD",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1042",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 1250000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 6000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1042.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Quenby Tool & Die LLC",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073914,
+     "first_seen": 1795073162,
+     "status": "PENDING"
+    },
+    "upfront": "37500000000000000"
+   },
+   "eighty": {
+    "accepted_at": 1795070230,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070170,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795075930,
+    "created_at": 1795069621,
+    "decision": {
+     "confirmed": {
+      "amount": 800000,
+      "status": "ALLOWED"
+     },
+     "confirmed_at": 1795075930,
+     "first_seen": {
+      "amount": 800000,
+      "at": 1795075270,
+      "status": "ALLOWED"
+     }
+    },
+    "digest": "6c4009e30d35e9ff813caa1f63184ac744bebe0feb821aca6c67a5e835b84c60",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "2",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069621,
+      "note": "price 55000000000000000 wei, upfront 27500000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070170,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070170,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070230,
+      "note": "55000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072450,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072450,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073170,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073170,
+      "note": "status PENDING; upfront released: 27500000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073170,
+      "note": "27500000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075270,
+      "note": "BUYER ALLOWED 800000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075270,
+      "note": "ALLOWED 800000; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795075930,
+      "note": "BUYER ALLOWED 800000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075930,
+      "note": "ALLOWED 800000",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795075930,
+      "note": "claim allowed at 800000 USD",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795075930,
+      "note": "16500000000000000 wei to the seller (allowed at 800000 USD: the price for that amount, less what was released); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075930,
+      "note": "11000000000000000 wei to the buyer (the rest of the escrow to the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "55000000000000000",
+     "final_due": "16500000000000000",
+     "left": "0",
+     "paid_at_decision": "16500000000000000",
+     "refunded": "11000000000000000",
+     "released": "44000000000000000",
+     "shortfall": "0"
+    },
+    "price": "55000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim allowed at 800000 USD",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1077",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 1000000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5500,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1077.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Brasswick Conveyor Parts LLC",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073170,
+     "first_seen": 1795072450,
+     "status": "PENDING"
+    },
+    "upfront": "27500000000000000"
+   },
+   "shortfall": {
+    "accepted_at": 1795070309,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070256,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795075967,
+    "created_at": 1795069664,
+    "decision": {
+     "confirmed": {
+      "amount": 400000,
+      "status": "ALLOWED"
+     },
+     "confirmed_at": 1795075967,
+     "first_seen": {
+      "amount": 400000,
+      "at": 1795075308,
+      "status": "ALLOWED"
+     }
+    },
+    "digest": "a55b797f9865f0f946d39321bb31d2c393df98d692171945eb23b287a8c15ef1",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "3",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069664,
+      "note": "price 48000000000000000 wei, upfront 28800000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070256,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070256,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070309,
+      "note": "48000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072501,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072501,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073214,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073214,
+      "note": "status PENDING; upfront released: 28800000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073214,
+      "note": "28800000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075308,
+      "note": "BUYER ALLOWED 400000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075308,
+      "note": "ALLOWED 400000; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795075967,
+      "note": "BUYER ALLOWED 400000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075967,
+      "note": "ALLOWED 400000",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795075967,
+      "note": "claim allowed at 400000 USD",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795075967,
+      "note": "19200000000000000 wei to the buyer (the rest of the escrow to the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "48000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "0",
+     "refunded": "19200000000000000",
+     "released": "28800000000000000",
+     "shortfall": "4800000000000000"
+    },
+    "price": "48000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim allowed at 400000 USD",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1103",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 800000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 6000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1103.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Velloran Packaging Co.",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 6000
+    },
+    "transfer": {
+     "confirmed_at": 1795073214,
+     "first_seen": 1795072501,
+     "status": "PENDING"
+    },
+    "upfront": "28800000000000000"
+   },
+   "disallowed": {
+    "accepted_at": 1795070388,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070342,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795076001,
+    "created_at": 1795069707,
+    "decision": {
+     "confirmed": {
+      "amount": 0,
+      "status": "DISALLOWED"
+     },
+     "confirmed_at": 1795076001,
+     "first_seen": {
+      "amount": 0,
+      "at": 1795075355,
+      "status": "DISALLOWED"
+     }
+    },
+    "digest": "2779a0a557050937c9fdccfe7d5acc1f9aa50759bf7b31783cf7ac62ec9734b9",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "4",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069707,
+      "note": "price 30000000000000000 wei, upfront 12000000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070342,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070342,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070388,
+      "note": "30000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072547,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072547,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073281,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073281,
+      "note": "status PENDING; upfront released: 12000000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073281,
+      "note": "12000000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075355,
+      "note": "BUYER DISALLOWED 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795075355,
+      "note": "DISALLOWED 0; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795076001,
+      "note": "BUYER DISALLOWED 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795076001,
+      "note": "DISALLOWED 0",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795076001,
+      "note": "claim disallowed after the transfer",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795076001,
+      "note": "18000000000000000 wei to the buyer (claim disallowed: what is left to the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "30000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "0",
+     "refunded": "18000000000000000",
+     "released": "12000000000000000",
+     "shortfall": "0"
+    },
+    "price": "30000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim disallowed after the transfer",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1129",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 600000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1129.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Tamsford Cold Storage Inc.",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 4000
+    },
+    "transfer": {
+     "confirmed_at": 1795073281,
+     "first_seen": 1795072547,
+     "status": "PENDING"
+    },
+    "upfront": "12000000000000000"
+   },
+   "withdrawn": {
+    "accepted_at": 1795070481,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070421,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795076091,
+    "created_at": 1795069751,
+    "decision": {
+     "confirmed": {
+      "amount": 0,
+      "status": "WITHDRAWN"
+     },
+     "confirmed_at": 1795076091,
+     "first_seen": {
+      "amount": 0,
+      "at": 1795075399,
+      "status": "WITHDRAWN"
+     }
+    },
+    "digest": "9d33d8131719bac71bf99d1dbac5aad82126842b5abf666652e7e2941f2d06c5",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "5",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069751,
+      "note": "price 25000000000000000 wei, upfront 12500000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070421,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070421,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070481,
+      "note": "25000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072598,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072598,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073331,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073331,
+      "note": "status PENDING; upfront released: 12500000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073331,
+      "note": "12500000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075399,
+      "note": "BUYER WITHDRAWN 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795075399,
+      "note": "WITHDRAWN 0; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795076091,
+      "note": "BUYER WITHDRAWN 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795076091,
+      "note": "WITHDRAWN 0",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795076091,
+      "note": "claim withdrawn after the transfer",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795076091,
+      "note": "12500000000000000 wei to the seller (claim withdrawn after the buyer was shown holding it live (the holder's act): what is left to the seller); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "25000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "12500000000000000",
+     "refunded": "0",
+     "released": "25000000000000000",
+     "shortfall": "0"
+    },
+    "price": "25000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim withdrawn after the transfer",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1156",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 500000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1156.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Kindrell Tire Service LLC",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073331,
+     "first_seen": 1795072598,
+     "status": "PENDING"
+    },
+    "upfront": "12500000000000000"
+   },
+   "no_transfer": {
+    "accepted_at": 1795070566,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070514,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795076372,
+    "created_at": 1795069800,
+    "decision": {
+     "confirmed": null,
+     "confirmed_at": 0,
+     "first_seen": null
+    },
+    "digest": "9ab5ad7e92152dc9f7eaab06158f4315a76f9e0c5fffbd9f713ec4c699c2839c",
+    "held_alive": false,
+    "held_by": "",
+    "id": "6",
+    "last_holder": "SELLER",
+    "log": [
+     {
+      "at": 1795069800,
+      "note": "price 35000000000000000 wei, upfront 17500000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070514,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070514,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070566,
+      "note": "35000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072611,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795076372,
+      "note": "no confirmed transfer by transfer_by",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795076372,
+      "note": "35000000000000000 wei to the buyer (no confirmed transfer by transfer_by: the buyer's money back); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "35000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "0",
+     "refunded": "35000000000000000",
+     "released": "0",
+     "shortfall": "0"
+    },
+    "price": "35000000000000000",
+    "readings": 2,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "no confirmed transfer by transfer_by",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1188",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 700000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1188.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Orvane Fuel Supply Inc.",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 0,
+     "first_seen": 0,
+     "status": ""
+    },
+    "upfront": "17500000000000000"
+   },
+   "unclear": {
+    "accepted_at": 1795070665,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070599,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795079073,
+    "created_at": 1795069850,
+    "decision": {
+     "confirmed": null,
+     "confirmed_at": 0,
+     "first_seen": null
+    },
+    "digest": "47cdd3eff0cf847ff8cd758976890b59345826fa4ad010cd2e0ff36f2a3f9496",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "7",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069850,
+      "note": "price 45000000000000000 wei, upfront 22500000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070599,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070599,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070665,
+      "note": "45000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072735,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072735,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073409,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073409,
+      "note": "status PENDING; upfront released: 22500000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073409,
+      "note": "22500000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075464,
+      "note": "BUYER UNCLEAR 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795076162,
+      "note": "BUYER UNCLEAR 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795079073,
+      "note": "no confirmed decision by allowance_by; split by no_decision_seller_bp",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795079073,
+      "note": "15750000000000000 wei to the seller (no decision by allowance_by: the seller's agreed share); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795079073,
+      "note": "6750000000000000 wei to the buyer (no decision by allowance_by: the rest to the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "45000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "0",
+     "refunded": "6750000000000000",
+     "released": "38250000000000000",
+     "shortfall": "0"
+    },
+    "price": "45000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "no confirmed decision by allowance_by; split by no_decision_seller_bp",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1204",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 900000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1204.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Gristmoor Signage LLC",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073409,
+     "first_seen": 1795072735,
+     "status": "PENDING"
+    },
+    "upfront": "22500000000000000"
+   },
+   "one_sided": {
+    "accepted_at": 1795070772,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070698,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795076131,
+    "created_at": 1795069887,
+    "decision": {
+     "confirmed": {
+      "amount": 1000000,
+      "status": "ALLOWED"
+     },
+     "confirmed_at": 1795076131,
+     "first_seen": {
+      "amount": 1000000,
+      "at": 1795075447,
+      "status": "ALLOWED"
+     }
+    },
+    "digest": "975251bf71f29a129f8262825619b13a3e2eab6487a274a87e89c5b756439f21",
+    "held_alive": true,
+    "held_by": "BUYER",
+    "id": "8",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069887,
+      "note": "price 50000000000000000 wei, upfront 25000000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070698,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070698,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070772,
+      "note": "50000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072238,
+      "note": "5000000000000000 wei to the seller",
+      "what": "RELEASE"
+     },
+     {
+      "at": 1795072238,
+      "note": "5000000000000000 wei to the seller (given by the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795072273,
+      "note": "5000000000000000 wei to the buyer",
+      "what": "REFUND"
+     },
+     {
+      "at": 1795072273,
+      "note": "5000000000000000 wei to the buyer (given by the seller); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795072781,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072781,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073411,
+      "note": "BUYER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073411,
+      "note": "status PENDING; upfront released: 20000000000000000 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073411,
+      "note": "20000000000000000 wei to the seller (transfer confirmed: upfront); withdraw it with withdraw()",
+      "what": "CREDIT"
+     },
+     {
+      "at": 1795075447,
+      "note": "BUYER ALLOWED 1000000",
+      "what": "READING"
+     },
+     {
+      "at": 1795075447,
+      "note": "ALLOWED 1000000; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795076131,
+      "note": "BUYER ALLOWED 1000000",
+      "what": "READING"
+     },
+     {
+      "at": 1795076131,
+      "note": "ALLOWED 1000000",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795076131,
+      "note": "claim allowed at 1000000 USD",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795076131,
+      "note": "20000000000000000 wei to the seller (allowed at 1000000 USD: the price for that amount, less what was released); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "50000000000000000",
+     "final_due": "25000000000000000",
+     "left": "0",
+     "paid_at_decision": "20000000000000000",
+     "refunded": "5000000000000000",
+     "released": "45000000000000000",
+     "shortfall": "0"
+    },
+    "price": "50000000000000000",
+    "readings": 5,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim allowed at 1000000 USD",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1231",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 1000000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1231.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Sallowby Uniform Rentals Inc.",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073411,
+     "first_seen": 1795072781,
+     "status": "PENDING"
+    },
+    "upfront": "25000000000000000"
+   },
+   "withdrawn_early": {
+    "accepted_at": 1795070857,
+    "baseline": {
+     "amount": 0,
+     "at": 1795070805,
+     "holder": "SELLER",
+     "status": "PENDING"
+    },
+    "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+    "clock": 1795075600,
+    "created_at": 1795069937,
+    "decision": {
+     "confirmed": {
+      "amount": 0,
+      "status": "WITHDRAWN"
+     },
+     "confirmed_at": 1795075600,
+     "first_seen": {
+      "amount": 0,
+      "at": 1795073515,
+      "status": "WITHDRAWN"
+     }
+    },
+    "digest": "61d8744a636d6e51cc834283a0ccc6561f1c532c3530a94f9ddc27b8e12a7e96",
+    "held_alive": false,
+    "held_by": "BUYER",
+    "id": "9",
+    "last_holder": "BUYER",
+    "log": [
+     {
+      "at": 1795069937,
+      "note": "price 20000000000000000 wei, upfront 10000000000000000 wei",
+      "what": "OFFERED"
+     },
+     {
+      "at": 1795070805,
+      "note": "SELLER PENDING 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795070805,
+      "note": "good: SELLER PENDING 0",
+      "what": "BASELINE"
+     },
+     {
+      "at": 1795070857,
+      "note": "20000000000000000 wei in escrow",
+      "what": "ACCEPTED"
+     },
+     {
+      "at": 1795072885,
+      "note": "BUYER WITHDRAWN 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795072885,
+      "note": "the buyer is shown as holder; confirmed once seen again after confirm_seconds",
+      "what": "TRANSFER_SEEN"
+     },
+     {
+      "at": 1795073515,
+      "note": "BUYER WITHDRAWN 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795073515,
+      "note": "status WITHDRAWN; upfront released: 0 wei",
+      "what": "TRANSFER_CONFIRMED"
+     },
+     {
+      "at": 1795073515,
+      "note": "WITHDRAWN 0; confirmed once seen again after confirm_seconds",
+      "what": "DECISION_SEEN"
+     },
+     {
+      "at": 1795075600,
+      "note": "BUYER WITHDRAWN 0",
+      "what": "READING"
+     },
+     {
+      "at": 1795075600,
+      "note": "WITHDRAWN 0",
+      "what": "DECISION_CONFIRMED"
+     },
+     {
+      "at": 1795075600,
+      "note": "claim withdrawn before the buyer was shown holding it live",
+      "what": "SETTLED"
+     },
+     {
+      "at": 1795075600,
+      "note": "20000000000000000 wei to the buyer (claim withdrawn before the buyer was shown holding it live: what is left to the buyer); withdraw it with withdraw()",
+      "what": "CREDIT"
+     }
+    ],
+    "money": {
+     "escrow": "20000000000000000",
+     "final_due": "0",
+     "left": "0",
+     "paid_at_decision": "0",
+     "refunded": "20000000000000000",
+     "released": "0",
+     "shortfall": "0"
+    },
+    "price": "20000000000000000",
+    "readings": 4,
+    "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+    "settled_reason": "claim withdrawn before the buyer was shown holding it live",
+    "state": "SETTLED",
+    "terms": {
+     "accept_by": 1795072140,
+     "allowance_by": 1795077240,
+     "buyer": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+     "buyer_name": "Harrowfield Credit Partners LP",
+     "claim_number": "1257",
+     "confirm_seconds": 600,
+     "currency": "USD",
+     "debtor_name": "Pellmoor Freight Lines, Inc.",
+     "face_amount": 400000,
+     "no_decision_seller_bp": 7000,
+     "rate_bp": 5000,
+     "register_url": "https://claims.brilliantnodes.com/register/b1/claim-1257.html",
+     "seller": "0x1A441E46d6F68b40431c2F55B7d16d081F158F3b",
+     "seller_name": "Penhallow Valve Works Inc.",
+     "transfer_by": 1795074540,
+     "units_per_gen": 10000000,
+     "upfront_bp": 5000
+    },
+    "transfer": {
+     "confirmed_at": 1795073515,
+     "first_seen": 1795072885,
+     "status": "WITHDRAWN"
+    },
+    "upfront": "10000000000000000"
+   }
+  },
+  "claimable": {
+   "seller": "0",
+   "buyer": "0"
+  }
+ },
+ "note": "Run b1 on Testnet Bradbury: the record written by tools/live.py (examples/live-bradbury-b1.json) plus one reading sent by hand (examples/live-bradbury-b1-extra.json), in time order."
+}

@@ -26,6 +26,7 @@ footer{max-width:980px;margin:auto;padding:0 20px 40px;color:var(--mute);font-si
 <p><b>Escrow for the purchase of a bankruptcy claim, settled on GenLayer from the claim's entry in the public claims register.</b></p>
 <p>The whole price sits in escrow. Validators read who holds the claim, its status and its allowed amount on the register page; plain code decides every amount. Nothing moves on one look: a state counts once it is seen twice, a set time apart.</p>
 <span class="pill">Fictional case and names</span><span class="pill">Test GEN only</span><span class="pill">Not legal advice</span>
+<p class="small">Live on GenLayer Studio (run s8: nine fictional deals, 67 transactions, all finalized) and on Testnet Bradbury (run b1: the same nine deals, 70 transactions, all finalized). Pick a run below.</p>
 <p style="margin-top:14px"><a href="claimescrow-demo.mp4">Video (1.5 min, with voice)</a> · <a href="https://github.com/brilliantnodes/claim-escrow">Repository</a> · <a href="https://github.com/brilliantnodes/claim-escrow/blob/main/contracts/claim_escrow.py">Contract</a> · by Brilliant Nodes</p>
 </div></header>
 <main>
@@ -53,11 +54,12 @@ footer{max-width:980px;margin:auto;padding:0 20px 40px;color:var(--mute);font-si
 </main>
 <footer>Every name, case and figure on this site and on the register pages is fictional. Test GEN only. Built by Brilliant Nodes on GenLayer.</footer>
 <script>
-var RUNS = [{file: "runs/live-studio-s8.json", label: "GenLayer Studio, run s8 (18 Nov 2026, this contract version)"},
+var RUNS = [{file: "runs/live-bradbury-b1.json", label: "Testnet Bradbury, run b1 (19 Nov 2026, this contract version; one reading sent by hand)"},
+            {file: "runs/live-studio-s8.json", label: "GenLayer Studio, run s8 (18 Nov 2026, this contract version)"},
             {file: "runs/live-studio-s2.json", label: "GenLayer Studio, run s2 (earlier contract version)"},
             {file: "runs/live-studio-s1.json", label: "GenLayer Studio, run s1 (earlier version; decision shown before the transfer was confirmed)"}];
 var EXPL = {studio: "https://explorer-studio.genlayer.com", bradbury: "https://scan.bradbury.genlayer.com"};
-function gen(w) { var x = BigInt(w || "0"); var s = (x / 10n ** 14n).toString().padStart(5, "0"); return s.slice(0, -4) + "." + s.slice(-4) + " GEN"; }
+function gen(w) { var x = BigInt(w || "0"); var s = (x / 10n ** 12n).toString().padStart(7, "0"); var f = s.slice(-6).replace(/0+$/, ""); if (f.length < 4) f = (f + "0000").slice(0, 4); return s.slice(0, -6) + "." + f + " GEN"; }  // up to 6 decimals: Bradbury amounts are 100x smaller
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
 function load(i) {
   fetch(RUNS[i].file).then(function (r) { return r.json(); }).then(function (rec) {

@@ -1,0 +1,22 @@
+{
+ "note": "Steps sent by hand during run b1, outside tools/live.py; merged into the record after the run.",
+ "steps": [
+  {
+   "case": "full",
+   "at": "2026-11-19 07:38:32",
+   "from": "0xe7b41121f8A05Ecd03cdF23955B277f052969dA4",
+   "fn": "read_register",
+   "args": [
+    "1"
+   ],
+   "value": "0",
+   "tx": "0x2199216cd95a92831a4dd71e872d695a5cffe0d217a96f2b23470278ae08c767",
+   "status": "MAJORITY_AGREE",
+   "execution": "FINISHED_WITH_RETURN",
+   "created": "1795073914",
+   "result": null,
+   "sent_at": 1795073912.1702552,
+   "expect": "extra reading, sent by hand: the first reading after the transfer (07:14 UTC) came back N1_WRONG_PAGE, so the transfer was first seen at the second; this one confirms it before transfer_by"
+  }
+ ]
+}

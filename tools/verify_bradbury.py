@@ -49,6 +49,13 @@ def main():
         rows.append({"case": s["case"], "fn": s["fn"], "tx": s["tx"], "status": st, "result": res, "execution": ex,
                      "recorded_result": recorded, "recorded_execution": s.get("execution"), "match": match})
     addr = rec["contract"]["address"]
+    if rec["contract"].get("deploy_tx"):
+        raw = node("tx", rec["contract"]["deploy_tx"])["raw"]
+        dep = {"case": "deploy", "fn": "deploy", "tx": rec["contract"]["deploy_tx"], "status": str(raw.get("statusName")), "result": raw.get("resultName"),
+               "execution": raw.get("txExecutionResultName"), "recipient": raw.get("recipient")}
+        dep["match"] = dep["status"] == "FINALIZED" and dep["execution"] == "FINISHED_WITH_RETURN" and str(dep["recipient"]).lower() == addr.lower()
+        ok &= dep["match"]
+        rows.insert(0, dep)
     totals = node("read", addr, "totals", "[]")["result"]
     bal = int(node("balance", addr)["result"])
     out = {"record": path.name, "net": "bradbury", "contract": addr, "transactions": len(rows), "all_finalized_and_match": ok,
