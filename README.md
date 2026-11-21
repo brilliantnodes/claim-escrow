@@ -4,7 +4,7 @@
 
 In GenLayer terms: escrow for the purchase of a bankruptcy claim, settled from the claim's entry in the public claims register. The whole price sits in escrow, and it moves only on what validators read on the register page: who holds the claim, its status and its allowed amount. Code decides every amount.
 
-**Live on GenLayer Studio:** contract [`0x0Ea5b829bF0EF137a4EBbDFd6A6B30d22bAD9674`](https://explorer-studio.genlayer.com/address/0x0Ea5b829bF0EF137a4EBbDFd6A6B30d22bAD9674), nine fictional deals, 67 transactions, all finalized ([results](#live-results)) · **Live on Testnet Bradbury:** contract [`0xdE2e969ecFE0229849ad95CF3Df8aC803F079131`](https://scan.bradbury.genlayer.com/address/0xdE2e969ecFE0229849ad95CF3Df8aC803F079131), the same nine deals, 70 transactions, all finalized ([results](#run-b1-on-testnet-bradbury)) · **Video (1.5 min, with voice):** https://claims.brilliantnodes.com/claimescrow-demo.mp4 · **Site:** https://claims.brilliantnodes.com · **Contract source:** [`contracts/claim_escrow.py`](contracts/claim_escrow.py) · **Live runs:** see [Live results](#live-results) · MIT
+**Live on GenLayer Studio:** contract [`0x0Ea5b829bF0EF137a4EBbDFd6A6B30d22bAD9674`](https://explorer-studio.genlayer.com/address/0x0Ea5b829bF0EF137a4EBbDFd6A6B30d22bAD9674), nine fictional deals, 67 transactions, all finalized ([results](#live-results)) · **Live on Testnet Bradbury:** contract [`0xdE2e969ecFE0229849ad95CF3Df8aC803F079131`](https://scan.bradbury.genlayer.com/address/0xdE2e969ecFE0229849ad95CF3Df8aC803F079131), the same nine deals, 70 transactions, all finalized ([results](#run-b1-on-testnet-bradbury)) · **Video (1.5 min, with voice):** https://claims.brilliantnodes.com/claimescrow-demo.mp4 · **Site:** https://claims.brilliantnodes.com · **Try it yourself:** https://claims.brilliantnodes.com/app/ · **Contract source:** [`contracts/claim_escrow.py`](contracts/claim_escrow.py) · **Live runs:** see [Live results](#live-results) · MIT
 
 > Fictional case, debtor, creditors and agent; test GEN only. Not legal advice.
 
@@ -267,6 +267,15 @@ In every case the seller's and the buyer's amounts add up to the price in escrow
 </details>
 
 Earlier runs: s1 and s2 used earlier contract versions (their records and checks are in `examples/`, and the site shows them). Runs s3 to s7 did not reach the end and are not published: they were cut short by machine restarts or ran on versions that later reviews changed. In s7, on a busy Studio, the script's readings went out late, after the register had already changed, so its record does not show the order the cases need.
+
+## Try it yourself
+
+**https://claims.brilliantnodes.com/app/**: sell a fictional claim on GenLayer Studio with two free temporary accounts kept in your browser (seller and buyer, funded from Studio's faucet). Pick what the court will decide (allowed in full, allowed at 80%, or disallowed), offer the claim, read the baseline, pay the price into escrow as the buyer, then let the page read the register (**Keep reading for me**) until code settles the price. About 25 to 35 minutes, most of it waiting for the register page to change.
+
+- Visitor contract on Studio: [`0xF25F7144B7Aa074c376EdB55E8a96826CB47e5b2`](https://explorer-studio.genlayer.com/address/0xF25F7144B7Aa074c376EdB55E8a96826CB47e5b2), the same unchanged source, deployed with the site's own host `claims.brilliantnodes.com` as its only register host and a 60-second minimum confirmation ([`tools/deploy_visitor.py`](tools/deploy_visitor.py), [record](examples/try/visitor-contract.json)). The app asks for 120 s.
+- Register pages: one per story every 15 minutes for 14 days from 21 Nov 2026 ([`tools/make_try_pages.py`](tools/make_try_pages.py)). Each shows the seller holding the claim, the buyer as transferee from 3 minutes after the acceptance deadline, and the court's decision from 12 minutes after it.
+- Price: 60% of the allowed amount on a $1,000,000 claim at $500,000 per test GEN (1.2 GEN), 50% upfront at the transfer.
+- End-to-end check, 21 Nov 2026 ([`tools/e2e_try.py`](tools/e2e_try.py), headless Chrome clicking the page as a visitor): story "allowed at 80%", deal #1 on the visitor contract. Baseline read, 1.2 GEN paid, transfer seen twice (upfront 0.6 GEN to the seller), decision "allowed, $800,000" seen twice, settled: **0.96 GEN to the seller, 0.24 GEN back to the buyer**, both withdrawn ([log](examples/try/e2e-partial/log.json), [screenshot](examples/try/e2e-partial/final.png)).
 
 ## Tests
 

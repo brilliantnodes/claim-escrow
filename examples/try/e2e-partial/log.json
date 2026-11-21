@@ -1,0 +1,187 @@
+[
+ {
+  "t": 1795276346,
+  "what": "accounts",
+  "seller": "0x56a9f0b213E679ad610C5A4012600dA9b99c70ed",
+  "buyer": "0xC96e066F927DD101190f5CA386893d8cf9c6DD99"
+ },
+ {
+  "t": 1795276346,
+  "what": "slot",
+  "note": "Claim TP-2611211615 against Pellmoor Freight Lines, Inc., face amount $1,000,000. The buyer must accept by 16:15 UTC (your time 08:15:00 PM, in 22 min 34 s). See its register page."
+ },
+ {
+  "t": 1795276355,
+  "what": "offer",
+  "note": "Accepted by a majority of validators."
+ },
+ {
+  "t": 1795276355,
+  "what": "deal",
+  "title": "Deal #1: claim TP-2611211615",
+  "next": "Read the register first: it must show the seller holding the claim. The buyer can then pay, until 16:15:00 UTC (in 22 min 26 s)."
+ },
+ {
+  "t": 1795276388,
+  "what": "baseline read",
+  "note": "Validators agreed on: holder seller, status pending.",
+  "next": "Baseline good: the seller holds the claim. Buyer, pay the price into escrow before 15:58:35 UTC (in 5 min 27 s)."
+ },
+ {
+  "t": 1795276397,
+  "what": "pay",
+  "note": "Accepted by a majority of validators.",
+  "state": "ACTIVE"
+ },
+ {
+  "t": 1795276397,
+  "what": "tx",
+  "step": "The buyer pays 1.2 GEN into escrow",
+  "note": "Accepted by a majority of validators.",
+  "state": "ACTIVE"
+ },
+ {
+  "t": 1795276398,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 24 min 44 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795276518,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 22 min 47 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795276638,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 20 min 47 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795276758,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 18 min 47 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795276878,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 16 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795276998,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 14 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277118,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 12 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277238,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 10 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277358,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 8 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277478,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 6 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277599,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 4 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277704,
+  "what": "keep reading for me: on"
+ },
+ {
+  "t": 1795277719,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 2 min 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277839,
+  "what": "waiting",
+  "next": "The price is in escrow. The register shows the transfer to the buyer from 16:18:00 UTC (in 42 s). Then read it twice, at least 120 s apart."
+ },
+ {
+  "t": 1795277929,
+  "what": "tx",
+  "step": "Read the register (automatic reading 1 of at most 8)",
+  "note": "Validators agreed on: holder buyer, status pending.",
+  "state": "ACTIVE"
+ },
+ {
+  "t": 1795277959,
+  "what": "waiting",
+  "next": "Transfer first seen at 16:18:03 UTC. Read again from 16:20:13 UTC (in 54 s) to confirm it."
+ },
+ {
+  "t": 1795278049,
+  "what": "tx",
+  "step": "Read the register (automatic reading 2 of at most 8)",
+  "note": "Validators agreed on: holder buyer, status pending.",
+  "state": "ACTIVE"
+ },
+ {
+  "t": 1795278079,
+  "what": "waiting",
+  "next": "Transfer confirmed: the upfront went to the seller. The register shows the court's decision from 16:27:00 UTC (in 5 min 42 s); then read twice again."
+ },
+ {
+  "t": 1795278199,
+  "what": "waiting",
+  "next": "Transfer confirmed: the upfront went to the seller. The register shows the court's decision from 16:27:00 UTC (in 3 min 41 s); then read twice again."
+ },
+ {
+  "t": 1795278319,
+  "what": "waiting",
+  "next": "Transfer confirmed: the upfront went to the seller. The register shows the court's decision from 16:27:00 UTC (in 1 min 41 s); then read twice again."
+ },
+ {
+  "t": 1795278440,
+  "what": "waiting",
+  "next": "Read the register for the court's decision."
+ },
+ {
+  "t": 1795278455,
+  "what": "tx",
+  "step": "Read the register (automatic reading 3 of at most 8)",
+  "note": "Validators agreed on: holder buyer, status allowed, allowed $800,000.",
+  "state": "ACTIVE"
+ },
+ {
+  "t": 1795278560,
+  "what": "waiting",
+  "next": "Read the register again to confirm the decision."
+ },
+ {
+  "t": 1795278590,
+  "what": "final",
+  "state": "SETTLED",
+  "next": "Done: claim allowed at 800000 USD. Each side withdraws what was credited to it (buttons under Accounts).",
+  "money": "Price (60% of the allowed amount)\n1.2 GEN\nUpfront at the transfer\n0.6 GEN\nPaid into escrow\n1.2 GEN\nStill in escrow\n0 GEN\nPaid to the seller\n0.96 GEN\nPaid back to the buyer\n0.24 GEN\nReadings so far\n5",
+  "seen": "Baseline (before paying)\nseller holds it, pending (15:52:35 UTC)\nTransfer first seen\n16:18:03 UTC\nTransfer confirmed\n16:20:13 UTC, status pending\nDecision first seen\nallowed, allowed $800,000 (16:27:03 UTC)\nDecision confirmed\nallowed, allowed $800,000 (16:29:13 UTC)\nLast holder seen\nbuyer"
+ },
+ {
+  "t": 1795278599,
+  "what": "withdraw seller",
+  "note": "Accepted: 0.96 GEN is on its way; it reaches the wallet when the transaction is finalized."
+ },
+ {
+  "t": 1795278608,
+  "what": "withdraw buyer",
+  "note": "Accepted: 0.24 GEN is on its way; it reaches the wallet when the transaction is finalized."
+ },
+ {
+  "t": 1795278611,
+  "what": "balances",
+  "seller": "Wallet: 20 GEN. Credited by the contract: 0 GEN.",
+  "buyer": "Wallet: 18.8 GEN. Credited by the contract: 0 GEN."
+ }
+]
