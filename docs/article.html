@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who carries the risk when a bankruptcy claim is sold? A proposal for settling claim trades from the public register | Brilliant Nodes</title>
+<meta name="description" content="Settling the sale of a bankruptcy claim from the public claims register, with the payment held until independent readers confirm the transfer.">
+<meta property="og:title" content="Who carries the risk when a bankruptcy claim is sold? A proposal for settling claim trades from the public register">
+<meta property="og:description" content="Settling the sale of a bankruptcy claim from the public claims register, with the payment held until independent readers confirm the transfer.">
+<meta property="og:type" content="article">
+<style>
+  :root { --ink:#1b1d21; --muted:#5d636e; --line:#e3e5e8; --accent:#2f5bd3; --bg:#fbfbfa; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e7e8ea; --muted:#a0a6b0; --line:#2c3038; --accent:#8fb0ff; --bg:#15171b; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:18px/1.7 Georgia, "Iowan Old Style", "Times New Roman", serif; }
+  header, main, footer { max-width:720px; margin:0 auto; padding:0 22px; }
+  header { padding-top:28px; font:14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--muted); }
+  header a { color:var(--muted); text-decoration:none; }
+  header a:hover { color:var(--accent); }
+  h1 { font-size:2.1rem; line-height:1.2; margin:28px 0 8px; letter-spacing:-0.01em; }
+  h2 { font:700 1.25rem/1.3 system-ui, -apple-system, "Segoe UI", sans-serif; margin:2.2em 0 .5em; }
+  p, li { margin:.7em 0; }
+  ul, ol { padding-left:1.4em; }
+  a { color:var(--accent); overflow-wrap:anywhere; }
+  em { color:inherit; }
+  table { border-collapse:collapse; width:100%; font-size:.9em; margin:1em 0; }
+  th, td { border-bottom:1px solid var(--line); padding:.45em .5em; text-align:left; vertical-align:top; }
+  code { font-size:.85em; }
+  footer { margin-top:48px; padding-bottom:40px; border-top:1px solid var(--line);
+           font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--muted); }
+  footer p { margin:14px 0 0; }
+</style>
+</head>
+<body>
+<header><a href="https://claims.brilliantnodes.com/">&larr; ClaimEscrow</a> &middot; Brilliant Nodes</header>
+<main>
+<article>
+<h1>Who carries the risk when a bankruptcy claim is sold? A proposal for settling claim trades from the public register</h1>
+<p><em>Brilliant Nodes · November 2026</em></p>
+<h2>Background: selling a claim before its value is known</h2>
+<p>When a company goes bankrupt, the people and firms it owes money to become creditors with a <strong>claim</strong>: a legal right to be paid something out of what is left. How much they will actually get, and when, is decided much later, often a year or more after the filing, once the court or administrator has reviewed every claim.</p>
+<p>Many creditors cannot wait that long. A small supplier that was owed €40,000 by a customer that went under may need the cash now to pay its own staff and suppliers. So a market exists in which creditors sell their claims to investors for a discounted price today. Claim trading is one part of litigation finance, a market estimated at about <strong>$25 billion in 2025</strong> [1].</p>
+<p>The difficulty is that <strong>a claim's real value is unknown at the moment it is sold</strong>. After the sale, the claim can be:</p>
+<ul>
+<li><strong>allowed in full</strong>, and paid at its face amount as the estate is distributed;</li>
+<li><strong>reduced</strong>, because the debtor or another creditor objects to part of it;</li>
+<li><strong>disallowed</strong>, because it is found invalid or a duplicate;</li>
+<li><strong>withdrawn</strong>.</li>
+</ul>
+<p>In US cases, a filed claim is treated as allowed unless someone objects (11 U.S.C. §502(a)), so many claims never get an explicit ruling, and an allowed or disallowed claim can even be reconsidered later for cause (§502(j)) [2].</p>
+<h2>Current practice and its limits</h2>
+<p>Because the value is decided after the money changes hands, every trade forces one side to trust the other:</p>
+<ul>
+<li><strong>The buyer pays in full, with "recourse".</strong> If the claim is later reduced or rejected, the seller must refund the difference. The buyer is now an unsecured creditor of the seller, the very kind of risk it was trying to buy at a discount.</li>
+<li><strong>The buyer holds part of the price back.</strong> The rest is paid only when the claim is allowed. Now the seller must trust the buyer to pay, perhaps a year later.</li>
+</ul>
+<p>For large claims, lawyers, custom contracts and professional escrow agents make this workable. For <strong>small trade claims</strong>, the cost of drafting, monitoring and enforcing recourse can exceed the amount at stake. The usual outcome is that the risk is priced in as a deeper discount for the seller, or the trade never happens. The creditors who most need liquidity are the ones least served.</p>
+<p>There is an irony in this. <strong>The facts that decide the money are public.</strong> In most large proceedings a claims agent publishes a register showing, for each claim, who holds it now (transfers are recorded: under US Bankruptcy Rule 3001(e)(2) the buyer files evidence of the transfer and the seller has 21 days to object [2]), its status, and, once decided, the allowed amount. The information exists. What is missing is a neutral party that watches it and moves the money accordingly, cheaply enough to make small trades viable.</p>
+<h2>An alternative approach</h2>
+<p>We propose an escrow that holds the <strong>entire</strong> purchase price and releases it according to what the public claims register shows, so that neither side has to extend credit to the other.</p>
+<p>The idea in five principles:</p>
+<ol>
+<li><strong>The register is the source of truth.</strong> The parties agree up front on which register page decides the trade and on a payout table for every outcome: allowed in full, allowed in part, disallowed, withdrawn, never transferred, or no decision by a long-stop date.</li>
+<li><strong>Independent readers, exact agreement.</strong> Several independent machines each open the register page and copy what it says: who holds the claim, its status and its allowed amount. A reading only counts if they agree on it exactly. If they do not, nothing happens and the page is read again later.</li>
+<li><strong>Nothing moves on one look.</strong> A change (the claim moving to the buyer, a decision being published) counts only when it is seen twice, some time apart. A page that is briefly wrong, or edited for a moment, cannot move money.</li>
+<li><strong>Machines read; rules decide.</strong> Language models are useful for reading pages written for humans, but they should not decide who gets paid. In our design, the model only copies text from the page. A fixed, published table decides every amount, and anything unfamiliar on the page ("allowed for voting purposes only", "expunged", "amended") is treated as unclear and moves nothing.</li>
+<li><strong>No money is ever stuck.</strong> Deadlines are part of the terms. If the transfer never appears, the buyer is refunded in full; if no decision appears by the long stop, an agreed split applies.</li>
+</ol>
+<p>In practice, a seller offers the claim with these terms, the buyer pays the price into the escrow, and from then on anyone can ask for the register to be read. When the transfer is confirmed, the seller receives an agreed first instalment; when the decision is confirmed, the rest is divided by the table. Each step adds up exactly to the money in escrow.</p>
+<p>The prototype runs on GenLayer, a blockchain in which several validators can each open a public web page and must agree on what it says; this supplies the independent readers without depending on a single server.</p>
+<h2>Demonstrated evidence</h2>
+<p>We built a fictional claims register and ran nine trades end to end, one for each outcome in the table, on two public test networks: 67 transactions on one and 70 on the other, all finalized, and every trade settled exactly as its terms specified. In every case the seller's and buyer's amounts added up to the price in escrow. The software passes 296 automated tests, and when we deliberately broke the code in 134 different ways, the tests caught every break.</p>
+<p>This is a demonstration with fictional data and test tokens. It shows the mechanism works; it does not yet show it works on real registers.</p>
+<h2>Further research</h2>
+<p>Several questions need work before this could be used on real claims:</p>
+<ol>
+<li><strong>Real register formats.</strong> Registers differ widely: some have a stable page per claim, others show claims in large tables, behind logins, or only as PDF documents. How many real proceedings publish their registers in a form that can be read reliably, and what would a standard machine-readable format look like?</li>
+<li><strong>Time scales and legal timing.</strong> Our demonstration confirms changes within minutes. Real use must respect legal periods (for example the 21-day objection window after a transfer notice) and decisions that can be reconsidered. How should confirmation periods be set per jurisdiction?</li>
+<li><strong>Legal recognition.</strong> Would courts and claims agents accept an automated escrow as satisfying the parties' recourse obligations? How should the sale agreement reference it?</li>
+<li><strong>Holder behaviour.</strong> After the transfer, the buyer, as the new holder, can influence the outcome (for example by amending the claim or agreeing a lower amount with the debtor). Which contractual or economic safeguards best handle this?</li>
+<li><strong>Identity.</strong> Nothing links a seller's payment address to the creditor named on the register. Could a claims agent or notary attest that link without exposing personal data?</li>
+<li><strong>Beyond the US.</strong> European insolvency procedures publish creditor information differently. Greece, for example, has a large volume of non-performing loans and court-supervised processes. How well does the approach transfer?</li>
+<li><strong>Reading reliability.</strong> How often do independent model-based readers disagree on real pages, and does requiring exact agreement cost too many retries in practice?</li>
+</ol>
+<p>Comments from insolvency practitioners, claims agents and claim traders on any of these points would be very welcome.</p>
+<h2>References</h2>
+<ol>
+<li>Custom Market Insights, <em>Litigation Funding Investment Market</em> (2025): <a rel="noopener" href="https://www.custommarketinsights.com/report/litigation-funding-investment-market/">https://www.custommarketinsights.com/report/litigation-funding-investment-market/</a></li>
+<li>11 U.S.C. §502; Federal Rule of Bankruptcy Procedure 3001(e)(2).</li>
+<li>Source code and full technical documentation (open source, MIT): <a rel="noopener" href="https://github.com/brilliantnodes/claim-escrow">https://github.com/brilliantnodes/claim-escrow</a></li>
+<li>Video walkthrough (1.5 min): <a rel="noopener" href="https://www.youtube.com/watch?v=MFiW9LkCT1s">https://www.youtube.com/watch?v=MFiW9LkCT1s</a></li>
+<li>Replay of the test runs: <a rel="noopener" href="https://claims.brilliantnodes.com">https://claims.brilliantnodes.com</a></li>
+</ol>
+<p><em>All companies, creditors, claims and figures in the demonstration are fictional. Test tokens only. Not legal advice.</em></p>
+</article>
+</main>
+<footer>
+<p>Written by Brilliant Nodes. Open-source prototype; test tokens only; not investment advice.
+<a href="https://claims.brilliantnodes.com/">Back to ClaimEscrow</a>.</p>
+</footer>
+</body>
+</html>
