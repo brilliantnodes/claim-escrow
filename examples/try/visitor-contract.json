@@ -1,0 +1,1 @@
+{"network": "studionet", "address": "0xF25F7144B7Aa074c376EdB55E8a96826CB47e5b2", "deploy_tx": "0xa84610943efa36d36da9e3db6ea6fbed51d9cb763ec5a206f45ed08345b4f7c0", "deployer": "0x456B226eba01AA2A87bA15C9d1a3146f2D6aD4bE", "register_hosts": ["claims.brilliantnodes.com"], "min_confirm_seconds": 60, "source": "contracts/claim_escrow.py (unchanged)", "deployed": "2026-11-21"}

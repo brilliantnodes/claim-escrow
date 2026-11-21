@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimEscrow: try it yourself</title>
+<meta name="description" content="Sell a fictional bankruptcy claim on GenLayer Studio: the price waits in escrow, validators read the public claims register, and code pays the seller and the buyer. Test GEN only.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d3557'/%3E%3Cpath d='M9 20l5 5 9-15' stroke='%23e4c66b' stroke-width='3.4' fill='none'/%3E%3C/svg%3E">
+  <script type="module" crossorigin src="./assets/index-CuMmO813.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/genlayer-DpotIrBa.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-DzprEWJe.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="../">ClaimEscrow</a>
+    <nav class="nets" aria-label="Pages"><a href="../">The live runs</a><a href="../article.html">The article</a></nav>
+    <a class="gh" href="https://github.com/brilliantnodes/claim-escrow" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Try it yourself: sell a bankruptcy claim, and let the public register settle the price.</h1>
+    <p class="lede">When a company goes bankrupt, its creditors' claims are bought and sold long before the court decides what each claim is worth. Today one side has to trust the other: the buyer pays in full and chases a refund if the claim is cut, or holds money back and the seller waits. Here the whole price waits in one escrow, and it moves only on what GenLayer validators read on the claim's entry in the public claims register.</p>
+    <p class="note">This page runs on <strong>GenLayer Studio</strong> with free temporary accounts kept in your browser. You play the seller and the buyer. A whole sale takes about 25 to 35 minutes, most of it waiting for the register to change. Fictional case, register and companies; test GEN only.</p>
+  </section>
+
+  <section class="how">
+    <ol class="steps4">
+      <li><strong>Offer.</strong> The seller freezes the terms: the claim, its register page, the price (60% of the allowed amount, 1.2 GEN for the full claim), a 50% upfront and the deadlines.</li>
+      <li><strong>Baseline and pay.</strong> A first reading must show the seller holding the claim. Then the buyer pays the whole price into escrow.</li>
+      <li><strong>Transfer.</strong> When the register shows the buyer as holder, seen twice at least 2 minutes apart, the upfront goes to the seller.</li>
+      <li><strong>Decision.</strong> When the court's decision is seen twice, code pays the rest: the price for the allowed amount to the seller, anything above it back to the buyer.</li>
+    </ol>
+  </section>
+
+  <section id="accounts">
+    <h2>1. Accounts</h2>
+    <p class="small">Two temporary accounts, kept only in this browser, funded from Studio's built-in faucet.</p>
+    <button type="button" id="btn-setup">Set up both accounts</button>
+    <div class="grid2" style="margin-top:12px">
+      <div class="panel"><h3>Seller (the creditor selling its claim)</h3><p class="mono" id="seller-addr">No account</p><p class="small" id="seller-bal"></p></div>
+      <div class="panel"><h3>Buyer (Harrowfield Credit Partners LP)</h3><p class="mono" id="buyer-addr">No account</p><p class="small" id="buyer-bal"></p></div>
+    </div>
+    <p class="error" id="acct-error" hidden></p>
+  </section>
+
+  <section id="start" class="panel">
+    <h2>2. Offer a claim (as the seller)</h2>
+    <p class="small">Pick what the court will decide. The claim's register page is published in advance by the fictional claims agent and changes on its own clock: the transfer shows 3 minutes after the acceptance deadline, the decision 12 minutes after it.</p>
+    <div class="stories" id="stories"></div>
+    <p class="small" id="slot-note"></p>
+    <button type="button" id="btn-offer">Offer the claim</button>
+  </section>
+
+  <section id="deal" hidden>
+    <div class="fac-head">
+      <h2 id="d-title"></h2>
+      <span class="badge" id="d-state"></span>
+      <button class="ghost" id="d-reload" type="button">Reload</button>
+    </div>
+    <p class="next" id="d-next"></p>
+    <div class="panel">
+      <h3>3. Act</h3>
+      <div id="d-actions"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h3>Money</h3><dl class="kv" id="d-money"></dl></div>
+      <div class="panel"><h3>Terms</h3><dl class="kv" id="d-terms"></dl></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h3>What the validators have seen</h3><dl class="kv" id="d-seen"></dl></div>
+      <div class="panel"><h3>What the contract recorded</h3><ol class="timeline" id="d-log"></ol></div>
+    </div>
+  </section>
+
+  <section id="life" class="panel" hidden>
+    <h3 id="life-what"></h3>
+    <ol class="life" id="steps"></ol>
+    <p class="small" id="life-hash"></p>
+    <p id="life-note"></p>
+  </section>
+
+  <section class="panel">
+    <h2>Open any deal</h2>
+    <form class="lookup" id="lookup">
+      <label>Deal number on this contract <input id="lookup-id" inputmode="numeric" autocomplete="off" placeholder="e.g. 1"></label>
+      <button type="submit">Open</button>
+    </form>
+    <p class="small">Finished examples with no wait: the claim sales of the live runs on Studio and Testnet Bradbury are on <a href="../">the main page</a>, every transaction linked.</p>
+  </section>
+
+  <section id="rules" class="panel">
+    <h2>The rules, in brief</h2>
+    <ul class="rules">
+      <li><strong>The model copies; code decides.</strong> Each validator renders the register page; its model copies the debtor, the claim number and the holder, status and allowed amount, each with its label. Code finds every value after its label on the validator's own copy of the page, looks the whole status text up in a closed table (anything else is UNCLEAR and moves nothing) and classes the holder as buyer, seller or someone else by whole words.</li>
+      <li><strong>Exact agreement:</strong> validators accept a reading only if kind, reason, holder, status and amount equal their own.</li>
+      <li><strong>Seen twice:</strong> the transfer and the decision each count once two readings at least the confirmation time apart show them. One look moves nothing.</li>
+      <li><strong>Outcomes:</strong> at the confirmed transfer the seller gets the upfront. Allowed at an amount: the seller gets the price for that amount less what it already had, the buyer the rest. Disallowed: the buyer gets what is left. Withdrawn: the seller gets what is left. No transfer in time refunds the buyer; no decision in time splits what is left by a share frozen in the terms.</li>
+      <li><strong>Payouts are credits:</strong> each address withdraws its own. Either side may also give money to the other at any time.</li>
+    </ul>
+    <p class="small">Full rules and limits: <a href="https://github.com/brilliantnodes/claim-escrow#readme" target="_blank" rel="noopener noreferrer">README</a>. The contract's <code>get_rules()</code> returns them on chain.</p>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Fictional demo: every case, claims agent, company and figure is invented. Test GEN only. Not legal advice. Built on <a href="https://genlayer.com" target="_blank" rel="noopener noreferrer">GenLayer</a> by Brilliant Nodes. MIT licence.</p>
+  <p class="small" id="foot-contract"></p>
+</footer>
+</body>
+</html>

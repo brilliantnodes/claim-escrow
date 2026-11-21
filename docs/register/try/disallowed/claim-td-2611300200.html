@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Claim TD-2611300200 - Pellmoor Freight Lines, Inc. - Claims Register</title>
+<style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:780px;margin:32px auto;padding:0 18px;color:#1c2430;background:#f7f8fa}
+.bar{background:#22334d;color:#fff;padding:14px 18px;border-radius:6px}.bar b{font-size:19px}.bar span{display:block;font-size:13px;opacity:.8}
+h1{font-size:22px;margin:22px 0 6px}.case{color:#555;margin:0 0 18px}.row{padding:9px 0;border-bottom:1px solid #dde2ea}.k{display:inline-block;min-width:170px;color:#556}
+.v{font-weight:600}.note{font-size:13px;color:#667;margin-top:18px}footer{margin-top:34px;font-size:12px;color:#889}</style>
+</head>
+<body>
+<div class="bar"><b>Marrowgate Restructuring Agents</b><span>Claims and noticing agent (fictional)</span></div>
+<h1>Claims Register: Pellmoor Freight Lines, Inc.</h1>
+<p class="case">Case No. 26-10432, United States Bankruptcy Court for the District of Example (fictional)</p>
+<div id="entry" hidden>
+<div class="row"><span class="k">Claim No.:</span> <span class="v">TD-2611300200</span></div>
+<div class="row"><span class="k">Creditor:</span> <span class="v"><span id=holder></span></span></div>
+<div class="row"><span class="k">Date filed:</span> <span class="v">2026-09-14</span></div>
+<div class="row"><span class="k">Claim amount:</span> <span class="v">$1,000,000.00</span></div>
+<div class="row"><span class="k">Status:</span> <span class="v"><span id=status></span></span></div>
+<div class="row"><span class="k">Allowed amount:</span> <span class="v"><span id=allowed></span></span></div>
+<div class="row"><span class="k">Last updated:</span> <span class="v" id="updated"></span></div>
+</div>
+<noscript><p>This register needs JavaScript to show the current entry.</p></noscript>
+<p class="note">Transfers of claim are shown as filed under Rule 3001(e). The current holder appears as "transferee of" the original creditor.</p>
+<footer>Fictional case, names and figures, published for a GenLayer ClaimEscrow demonstration by Brilliant Nodes. Not a real register.</footer>
+<script>
+(function () {
+  var s = [{"from": 1795982400, "holder": "Tamsford Cold Storage Inc.", "status": "Pending", "allowed": ""}, {"from": 1796004180, "holder": "Harrowfield Credit Partners LP as transferee of Tamsford Cold Storage Inc.", "status": "Pending", "allowed": ""}, {"from": 1796004720, "holder": "Harrowfield Credit Partners LP as transferee of Tamsford Cold Storage Inc.", "status": "Disallowed by court order", "allowed": ""}];
+  var now = Date.now() / 1000, cur = s[0];
+  for (var i = 0; i < s.length; i++) if (s[i].from <= now) cur = s[i];
+  document.getElementById("holder").textContent = cur.holder;
+  document.getElementById("status").textContent = cur.status;
+  document.getElementById("allowed").textContent = cur.allowed || "-";
+  document.getElementById("updated").textContent = new Date(cur.from * 1000).toISOString().slice(0, 16).replace("T", " ") + " UTC";
+  document.getElementById("entry").hidden = false;
+})();
+</script>
+</body>
+</html>
