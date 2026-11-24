@@ -1,6 +1,12 @@
 import "./style.css";
 import { createClient, createAccount, generatePrivateKey, abi } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
+// Since late November 2026 GenLayer Studio refuses a transaction without a fee distribution.
+// Reads stay on genlayer-js 1; every write goes through genlayer-js 2 with a fee estimate
+// (about 0.1 test GEN deposited, the unused part refunded).
+import { createClient as createWriter, createAccount as createAccountW } from "genlayer-js-studio";
+import { studionet as studionetW } from "genlayer-js-studio/chains";
+const studioFees = async (w) => { const f = await w.estimateTransactionFees(); return { distribution: f.distribution, feeValue: f.feeValue }; };
 
 // The visitor contract on GenLayer Studio (tools/deploy_visitor.py): the same
 // source as the live runs, register host claims.brilliantnodes.com, minimum
@@ -69,7 +75,7 @@ function useRole(role) {
   let key = store.get(`ce.temp.${role}`);
   if (!key) { key = generatePrivateKey(); store.set(`ce.temp.${role}`, key); }
   const account = createAccount(key);
-  roles[role] = { client: createClient({ chain: studionet, account }), address: account.address };
+  roles[role] = { client: createWriter({ chain: studionetW, account: createAccountW(key) }), address: account.address };
   $(`${role}-addr`).textContent = account.address;
 }
 async function faucet(address) {
@@ -276,7 +282,7 @@ async function send(role, fn, args, value, what) {
   busy = true; document.querySelectorAll("#d-actions button, #btn-offer").forEach((b) => (b.disabled = true));
   $("life").hidden = false; $("life-what").textContent = what; $("life-hash").replaceChildren(); $("life-note").textContent = "Signing in this browser…"; drawSteps("", false);
   let hash, err;
-  try { hash = await who.client.writeContract({ address: CONTRACT, functionName: fn, args, value: value || 0n }); } catch (e) { err = e; }
+  try { hash = await who.client.writeContract({ address: CONTRACT, functionName: fn, args, value: value || 0n, fees: await studioFees(who.client) }); } catch (e) { err = e; }
   let out = null;
   if (err) { drawSteps("SENT", true); $("life-note").textContent = `The network did not confirm the send (${short(err)}). Studio's gateway sometimes refuses for a moment when it is busy. It may or may not have gone out, so this page does not resend it: press Reload in a minute and check before trying again.`; auto = false; }
   else {
